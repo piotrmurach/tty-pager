@@ -1,6 +1,13 @@
 # TTY::Pager
+[![Gem Version](https://badge.fury.io/rb/tty-pager.svg)][gem]
+[![Build Status](https://secure.travis-ci.org/peter-murach/tty-pager.svg?branch=master)][travis]
+[![Code Climate](https://codeclimate.com/github/peter-murach/tty-pager/badges/gpa.svg)][codeclimate]
+[![Coverage Status](https://coveralls.io/repos/peter-murach/tty-pager/badge.svg)][coverage]
 
-# tty-which - to determine available executables
+[gem]: http://badge.fury.io/rb/tty-pager
+[travis]: http://travis-ci.org/peter-murach/tty-pager
+[codeclimate]: https://codeclimate.com/github/peter-murach/tty-pager
+[coverage]: https://coveralls.io/r/peter-murach/tty-pager
 
 > Terminal output paging in a cross-platform way supporting all major ruby interpreters.
 
@@ -22,7 +29,7 @@ Or install it yourself as:
 
 ## 1. Usage
 
-The **TTY::Pager** upon initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a NullPager is used that simply prints content out to stdout, otherwise a check is performed to find native system executable to perform pagination natively with SystemPager. If no system executable is found, a `BasicPager` is used which is a pure Ruby implementation that will work with any ruby interpreter.
+The **TTY::Pager** upon initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a `NullPager` is used that simply prints content out to stdout, otherwise a check is performed to find native system executable to perform pagination natively with `SystemPager`. If no system executable is found, a `BasicPager` is used which is a pure Ruby implementation that will work with any ruby interpreter.
 
 ```ruby
 pager = TTY::Pager.new
