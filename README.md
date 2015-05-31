@@ -3,11 +3,13 @@
 [![Build Status](https://secure.travis-ci.org/peter-murach/tty-pager.svg?branch=master)][travis]
 [![Code Climate](https://codeclimate.com/github/peter-murach/tty-pager/badges/gpa.svg)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/peter-murach/tty-pager/badge.svg)][coverage]
+[![Inline docs](http://inch-ci.org/github/peter-murach/tty-pager.svg?branch=master)][inchpages]
 
 [gem]: http://badge.fury.io/rb/tty-pager
 [travis]: http://travis-ci.org/peter-murach/tty-pager
 [codeclimate]: https://codeclimate.com/github/peter-murach/tty-pager
 [coverage]: https://coveralls.io/r/peter-murach/tty-pager
+[inchpages]: http://inch-ci.org/github/peter-murach/tty-pager
 
 > Terminal output paging in a cross-platform way supporting all major ruby interpreters.
 
