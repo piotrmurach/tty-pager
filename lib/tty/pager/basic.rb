@@ -17,35 +17,40 @@ module TTY
 
         text.lines.each do |line|
           chunk = []
-          chunk = leftover.dup unless leftover.empty?
+          if !leftover.empty?
+            chunk = leftover
+            leftover = []
+          end
           wrapped_line = Verse.wrap(line, @width)
-          wrapped_line.lines.map(&:chomp).each do |line_part|
+          wrapped_line.lines.each do |line_part|
             if lines_left > 0
-              chunk << line_part.chomp
+              chunk << line_part
               lines_left -= 1
             else
-              leftover << line_part.chomp
+              leftover << line_part
             end
           end
-          output.puts chunk.join("\n")
+          output.print(chunk.join)
 
           if lines_left == 0
             break unless continue_paging?(page_num)
             lines_left = @height
-            lines_left -= leftover.size
+            if leftover.size > 0
+              lines_left -= leftover.size
+            end
             page_num += 1
             return !callback.call(page_num) unless callback.nil?
           end
         end
 
-        if lines_left > 0
-          output.print leftover.join("\n")
-          output.puts unless leftover.empty?
+        if leftover.size > 0
+          output.print(leftover.join)
         end
       end
 
       private
 
+      # @api private
       def continue_paging?(page_num)
         instance_exec(page_num, &@prompt)
         !@input.gets.chomp[/q/i]

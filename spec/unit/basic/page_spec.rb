@@ -105,4 +105,31 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
       "I try all things, I achieve what I can.\n",
     ].join("\n"))
   end
+
+  it "preserves new lines when breaking" do
+    text = "a\na\na\na\na\na\na\na\na\na"
+    input << "\n\n\n"
+    input.rewind
+    pager = described_class.new(output: output, input: input,
+                                width: 1, height: 5)
+    pager.page(text)
+    expect(output.string).to eq([
+      "a",
+      "a",
+      "a",
+      "",
+      "--- Page -1- Press enter/return to continue (or q to quit) ---",
+      "a",
+      "a",
+      "a",
+      "",
+      "--- Page -2- Press enter/return to continue (or q to quit) ---",
+      "a",
+      "a",
+      "a",
+      "",
+      "--- Page -3- Press enter/return to continue (or q to quit) ---",
+      "a"
+    ].join("\n"))
+  end
 end
