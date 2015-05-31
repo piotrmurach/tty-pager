@@ -9,6 +9,12 @@ module TTY
     class SystemPager < Pager
       # Find first available system command for paging
       #
+      # @example Basic usage
+      #   available # => 'less'
+      #
+      # @example Usage with commands
+      #   available('less', 'cat')  # => 'less'
+      #
       # @param [Array[String]] commands
       #
       # @return [String]
@@ -21,14 +27,28 @@ module TTY
 
       # Check if command is available
       #
+      # @example Basic usage
+      #   available?  # => true
+      #
+      # @example Usage with command
+      #   available?('less') # => true
+      #
+      # @return [Boolean]
+      #
       # @api public
-      def self.available?
-        !available.nil?
+      def self.available?(*commands)
+        !available(*commands).nil?
       end
 
       # Use system command to page output text
       #
+      # @example
+      #  page('some long text...')
+      #
       # @param [String] text
+      #   the text to paginate
+      #
+      # @return [nil]
       #
       # @api public
       def page(text, &callback)
@@ -72,6 +92,9 @@ module TTY
 
       # Check if command exists
       #
+      # @example
+      #   command_exists?('less) # => true
+      #
       # @param [String] command
       #   the command to check
       #
@@ -79,7 +102,7 @@ module TTY
       #
       # @api private
       def self.command_exists?(command)
-        !system(command).nil?
+        !TTY::Which.which(command).nil?
       end
       private_class_method :command_exists?
 
