@@ -9,7 +9,7 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     pager = described_class.new(output: output, input: input)
 
     allow(pager).to receive(:exec)
-    allow(pager).to receive(:fork).and_return(true)
+    allow(Kernel).to receive(:fork).and_return(true)
     allow(pager).to receive(:pager_command).and_return('less')
     allow(IO).to receive(:select)
     allow(input).to receive(:reopen)
