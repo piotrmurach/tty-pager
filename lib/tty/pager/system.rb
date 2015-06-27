@@ -88,7 +88,7 @@ module TTY
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
          `git config --get-all core.pager`.split.first,
-        'less', 'more', 'cat', 'pager']
+         'less', 'more', 'cat', 'pager']
       end
       private_class_method :executables
 
@@ -116,10 +116,10 @@ module TTY
       # @api private
       def pager_command(*commands)
         @pager_command = if @pager_command && commands.empty?
-          @pager_command
-        else
-          self.class.available(*commands)
-        end
+                           @pager_command
+                         else
+                           self.class.available(*commands)
+                         end
       end
     end # SystemPager
   end # Pager
