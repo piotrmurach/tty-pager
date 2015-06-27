@@ -25,6 +25,6 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
 
   it "allows to query for available command" do
     allow(pager).to receive(:available).with('less') { true }
-    expect(pager.available('less')).to eq(true)
+    expect(pager.available?('less')).to eq(true)
   end
 end

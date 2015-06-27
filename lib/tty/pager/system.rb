@@ -106,7 +106,6 @@ module TTY
       def self.command_exists?(command)
         !TTY::Which.which(command).nil?
       end
-      private_class_method :command_exists?
 
       # The pager command to run
       #
