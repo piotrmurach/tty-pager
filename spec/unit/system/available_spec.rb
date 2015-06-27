@@ -22,4 +22,9 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     allow(pager).to receive(:command_exists?).with('more') { true }
     expect(pager.available('more')).to eql('more')
   end
+
+  it "allows to query for available command" do
+    allow(pager).to receive(:available).with('less') { true }
+    expect(pager.available('less')).to eq(true)
+  end
 end
