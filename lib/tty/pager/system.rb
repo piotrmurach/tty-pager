@@ -43,19 +43,19 @@ module TTY
       # Use system command to page output text
       #
       # @example
-      #  page('some long text...')
+      #   page('some long text...')
       #
       # @param [String] text
       #   the text to paginate
       #
-      # @return [nil]
+      # @return [Boolean]
+      #   the success status of launching a process
       #
       # @api public
       def page(text, &callback)
         read_io, write_io = IO.pipe
 
-        if Kernel.fork
-          # parent process
+        pid = Kernel.fork do
           write_io.close
           input.reopen(read_io)
           read_io.close
@@ -68,12 +68,14 @@ module TTY
           rescue SystemCallError
             exit 1
           end
-        else
-          # child process
-          read_io.close
-          write_io.write(text)
-          write_io.close
         end
+
+        read_io.close
+        write_io.write(text)
+        write_io.close
+
+        _, status = Process.waitpid2(pid)
+        status.success?
       end
 
       private
