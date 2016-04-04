@@ -1,19 +1,19 @@
 # TTY::Pager
 [![Gem Version](https://badge.fury.io/rb/tty-pager.svg)][gem]
-[![Build Status](https://secure.travis-ci.org/peter-murach/tty-pager.svg?branch=master)][travis]
-[![Code Climate](https://codeclimate.com/github/peter-murach/tty-pager/badges/gpa.svg)][codeclimate]
-[![Coverage Status](https://coveralls.io/repos/peter-murach/tty-pager/badge.svg)][coverage]
-[![Inline docs](http://inch-ci.org/github/peter-murach/tty-pager.svg?branch=master)][inchpages]
+[![Build Status](https://secure.travis-ci.org/piotrmurach/tty-pager.svg?branch=master)][travis]
+[![Code Climate](https://codeclimate.com/github/piotrmurach/tty-pager/badges/gpa.svg)][codeclimate]
+[![Coverage Status](https://coveralls.io/repos/github/piotrmurach/tty-pager/badge.svg)][coverage]
+[![Inline docs](http://inch-ci.org/github/piotrmurach/tty-pager.svg?branch=master)][inchpages]
 
 [gem]: http://badge.fury.io/rb/tty-pager
-[travis]: http://travis-ci.org/peter-murach/tty-pager
-[codeclimate]: https://codeclimate.com/github/peter-murach/tty-pager
-[coverage]: https://coveralls.io/r/peter-murach/tty-pager
-[inchpages]: http://inch-ci.org/github/peter-murach/tty-pager
+[travis]: http://travis-ci.org/piotrmurach/tty-pager
+[codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager
+[coverage]: https://coveralls.io/github/piotrmurach/tty-pager
+[inchpages]: http://inch-ci.org/github/piotrmurach/tty-pager
 
 > Terminal output paging in a cross-platform way supporting all major ruby interpreters.
 
-**TTY::Pager** provides independent terminal output paging component for [TTY](https://github.com/peter-murach/tty) toolkit.
+**TTY::Pager** provides independent terminal output paging component for [TTY](https://github.com/piotrmurach/tty) toolkit.
 
 ## Installation
 
@@ -77,7 +77,7 @@ ENV['PAGER']='less'
 
 ## Contributing
 
-1. Fork it ( https://github.com/peter-murach/tty-pager/fork )
+1. Fork it ( https://github.com/piotrmurach/tty-pager/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
