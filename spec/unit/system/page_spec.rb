@@ -10,6 +10,12 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     read_io  = spy
     write_io = spy
 
+    if !pager.respond_to?(:fork)
+      described_class.send :define_method, :fork, lambda { |*args|
+        yield if block_given?
+      }
+    end
+
     allow(IO).to receive(:pipe).and_return([read_io, write_io])
 
     allow(pager).to receive(:fork) do |&block|
