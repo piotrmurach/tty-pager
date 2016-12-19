@@ -1,6 +1,7 @@
 # TTY::Pager [![Gitter](https://badges.gitter.im/Join%20Chat.svg)][gitter]
 [![Gem Version](https://badge.fury.io/rb/tty-pager.svg)][gem]
 [![Build Status](https://secure.travis-ci.org/piotrmurach/tty-pager.svg?branch=master)][travis]
+[![Build status](https://ci.appveyor.com/api/projects/status/3auc1vi3mk5puqai?svg=true)][appveyor]
 [![Code Climate](https://codeclimate.com/github/piotrmurach/tty-pager/badges/gpa.svg)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/github/piotrmurach/tty-pager/badge.svg)][coverage]
 [![Inline docs](http://inch-ci.org/github/piotrmurach/tty-pager.svg?branch=master)][inchpages]
@@ -8,6 +9,7 @@
 [gitter]: https://gitter.im/piotrmurach/tty
 [gem]: http://badge.fury.io/rb/tty-pager
 [travis]: http://travis-ci.org/piotrmurach/tty-pager
+[appveyor]: https://ci.appveyor.com/project/piotrmurach/tty-pager
 [codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager
 [coverage]: https://coveralls.io/github/piotrmurach/tty-pager
 [inchpages]: http://inch-ci.org/github/piotrmurach/tty-pager
