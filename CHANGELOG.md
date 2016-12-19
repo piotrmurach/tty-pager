@@ -3,6 +3,8 @@
 ## [v0.5.0] - 2016-12-19
 
 ### Changed
+* Change to call TTY::Which#exist? new api
+* Change to send fork message directly to SystemPager
 * Update tty-which
 * Update verse dependency
 
