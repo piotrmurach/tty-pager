@@ -12,7 +12,7 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
 
     allow(IO).to receive(:pipe).and_return([read_io, write_io])
 
-    allow(Kernel).to receive(:fork) do |&block|
+    allow(pager).to receive(:fork) do |&block|
       allow(input).to receive(:reopen)
       allow(IO).to receive(:select)
       allow(pager).to receive(:pager_command).and_return('less')

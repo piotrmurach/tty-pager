@@ -55,7 +55,7 @@ module TTY
       def page(text, &callback)
         read_io, write_io = IO.pipe
 
-        pid = Kernel.fork do
+        pid = fork do
           write_io.close
           input.reopen(read_io)
           read_io.close
