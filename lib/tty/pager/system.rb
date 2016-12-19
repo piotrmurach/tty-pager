@@ -104,7 +104,7 @@ module TTY
       #
       # @api private
       def self.command_exists?(command)
-        !TTY::Which.which(command).nil?
+        TTY::Which.exist?(command)
       end
 
       # The pager command to run
