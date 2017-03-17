@@ -12,17 +12,11 @@ module TTY
       # @example Basic usage
       #   available # => 'less'
       #
-      # @example Usage with commands
-      #   available('less', 'cat')  # => 'less'
-      #
-      # @param [Array[String]] commands
-      #
       # @return [String]
       #
       # @api public
-      def self.available(*commands)
-        commands = commands.empty? ? executables : commands
-        commands.compact.uniq.find { |cmd| command_exists?(cmd) }
+      def self.available
+        executables.compact.uniq.find { |cmd| command_exists?(cmd) }
       end
 
       # Check if command is available
@@ -30,14 +24,11 @@ module TTY
       # @example Basic usage
       #   available?  # => true
       #
-      # @example Usage with command
-      #   available?('less') # => true
-      #
       # @return [Boolean]
       #
       # @api public
-      def self.available?(*commands)
-        !available(*commands).nil?
+      def self.available?
+        !available.nil?
       end
 
       # Use system command to page output text
@@ -113,11 +104,11 @@ module TTY
       #   the name of executable to run
       #
       # @api private
-      def pager_command(*commands)
-        @pager_command = if @pager_command && commands.empty?
+      def pager_command
+        @pager_command = if @pager_command
                            @pager_command
                          else
-                           self.class.available(*commands)
+                           self.class.available
                          end
       end
     end # SystemPager
