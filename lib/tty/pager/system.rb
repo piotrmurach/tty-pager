@@ -22,7 +22,7 @@ module TTY
       # @api public
       def self.available(*commands)
         commands = commands.empty? ? executables : commands
-        commands.compact.uniq.find { |cmd| command_exists?(cmd) }
+        commands.compact.uniq.find { |cmd| command_exists?(cmd.split.first) }
       end
 
       # Check if command is available
@@ -87,7 +87,7 @@ module TTY
       # @api private
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
-         `git config --get-all core.pager`.split.first,
+         `git config --get-all core.pager`,
          'less', 'more', 'cat', 'pager']
       end
       private_class_method :executables

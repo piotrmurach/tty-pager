@@ -27,4 +27,16 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     allow(pager).to receive(:available).with('less') { true }
     expect(pager.available?('less')).to eq(true)
   end
+
+  context "when given a multi-word executable" do
+    let(:execs) { ["diff-so-fancy | less --tabs=4 -RFX"] }
+
+    subject(:pager) { described_class }
+
+    it "finds the command" do
+      allow(pager).to receive(:executables).and_return(execs)
+      allow(pager).to receive(:command_exists?).with("diff-so-fancy") { true }
+      expect(pager.available).to eql(execs.first)
+    end
+  end
 end
