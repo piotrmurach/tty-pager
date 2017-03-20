@@ -3,6 +3,7 @@
 ## [v0.7.0] - 2017-03-20
 
 ### Changed
+* Change files loading
 * Update tty-which dependency
 
 ## [v0.6.0] - 2017-03-19
