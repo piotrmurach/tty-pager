@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'verse'
+
 module TTY
   class Pager
     # A basic pager is used to work on systems where

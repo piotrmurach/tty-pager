@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'tty-which'
+
 module TTY
   class Pager
     # A system pager is used  on systems where native
