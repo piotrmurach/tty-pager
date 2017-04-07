@@ -24,7 +24,9 @@ module TTY
       # @api public
       def self.available(*commands)
         commands = commands.empty? ? executables : commands
-        commands.compact.uniq.find { |cmd| command_exists?(cmd.split.first) }
+        commands.
+          compact.map(&:strip).reject(&:empty?).uniq.
+          find { |cmd| command_exists?(cmd.split.first) }
       end
 
       # Check if command is available
