@@ -2,6 +2,6 @@
 
 module TTY
   class Pager
-    VERSION = "0.7.0"
+    VERSION = "0.7.1"
   end # Pager
 end # TTY
