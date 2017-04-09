@@ -1,5 +1,10 @@
 # Change log
 
+## [v0.7.1] - 2017-04-09
+
+### Fixed
+* Fix SystemPager raises error when executable is blank string by Jacob Evelyn (@JacobEvelyn)
+
 ## [v0.7.0] - 2017-03-20
 
 ### Changed
