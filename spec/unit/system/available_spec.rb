@@ -28,10 +28,17 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     expect(pager.available?('less')).to eq(true)
   end
 
+  context "when given nil, blank, and whitespace commands" do
+    let(:execs) { [nil, "", "   ", "less"] }
+
+    it "does not error" do
+      allow(pager).to receive(:executables).and_return(execs)
+      expect(pager.available).to eql("less")
+    end
+  end
+
   context "when given a multi-word executable" do
     let(:execs) { ["diff-so-fancy | less --tabs=4 -RFX"] }
-
-    subject(:pager) { described_class }
 
     it "finds the command" do
       allow(pager).to receive(:executables).and_return(execs)
