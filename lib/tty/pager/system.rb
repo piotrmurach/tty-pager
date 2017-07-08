@@ -9,6 +9,18 @@ module TTY
     #
     # @api public
     class SystemPager < Pager
+      # Create a system pager
+      #
+      # @param [Hash] options
+      # @option options [String] :command
+      #   the command to use for paging
+      #
+      # @api public
+      def initialize(options = {})
+        super
+        @pager_command = options[:command]
+      end
+
       # Find first available system command for paging
       #
       # @example Basic usage
@@ -24,9 +36,9 @@ module TTY
       # @api public
       def self.available(*commands)
         commands = commands.empty? ? executables : commands
-        commands.
-          compact.map(&:strip).reject(&:empty?).uniq.
-          find { |cmd| command_exists?(cmd.split.first) }
+        commands
+          .compact.map(&:strip).reject(&:empty?).uniq
+          .find { |cmd| command_exists?(cmd.split.first) }
       end
 
       # Check if command is available
