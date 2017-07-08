@@ -16,7 +16,8 @@ RSpec.describe TTY::Pager, '.page' do
 
   it "selects basic pager on non tty systems" do
     basic_pager = spy(:basic_pager)
-    allow(TTY::Pager::SystemPager).to receive(:available?) { false }
+    allow(described_class).to receive(:jruby?) { false }
+    allow(TTY::Pager::SystemPager).to receive(:fork?) { false }
     allow(TTY::Pager::BasicPager).to receive(:new) { basic_pager }
 
     pager = described_class.new
@@ -28,8 +29,8 @@ RSpec.describe TTY::Pager, '.page' do
 
   it "selects system pager on systems with tty" do
     system_pager = spy(:system_pager)
-    allow(TTY::Pager::SystemPager).to receive(:available?) { true }
     allow(described_class).to receive(:jruby?) { false }
+    allow(TTY::Pager::SystemPager).to receive(:fork?) { true }
     allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
 
     pager = described_class.new

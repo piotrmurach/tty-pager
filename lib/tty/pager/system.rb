@@ -56,6 +56,19 @@ module TTY
         !available(*commands).nil?
       end
 
+      # Check if fork is supported
+      #
+      # @return [Boolean]
+      #
+      # @api public
+      def self.fork?
+        pid = fork {}
+        exit unless pid
+        true
+      rescue NotImplementedError
+        false
+      end
+
       # Use system command to page output text
       #
       # @example
