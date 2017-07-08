@@ -4,9 +4,14 @@
 
 ### Added
 * Add :command option to SystemPager to enforce choice of pagination tool
+* Add Error type for specific error notifications
+
+### Changed
+* Change SystemPager to prevent initialization if not supported
 
 ### Fixed
 * Fix BasicPager to take terminal width into account when displaying page break messages
+* Fix SystemPager on Windows by detecting fork implementation
 
 ## [v0.7.1] - 2017-04-09
 
