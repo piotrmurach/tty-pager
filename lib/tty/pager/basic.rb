@@ -13,6 +13,7 @@ module TTY
       PAGE_BREAK = "\n--- Page -%s- " \
                     "Press enter/return to continue " \
                     "(or q to quit) ---".freeze
+
       # Create a basic pager
       #
       # @option options [Integer] :height
