@@ -27,7 +27,7 @@ module TTY
         @height  = options.fetch(:height) { page_height }
         @width   = options.fetch(:width)  { page_width }
         @prompt  = options.fetch(:prompt) { default_prompt }
-        prompt_height = PAGE_BREAK.lines.size
+        prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
       end
 
