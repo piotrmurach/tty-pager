@@ -1,5 +1,13 @@
 # Change log
 
+## [v0.8.0] - 2017-07-xx
+
+### Added
+* Add :command option to SystemPager to enforce choice of pagination tool
+
+### Fixed
+* Fix BasicPager to take terminal width into account when displaying page break messages
+
 ## [v0.7.1] - 2017-04-09
 
 ### Fixed
