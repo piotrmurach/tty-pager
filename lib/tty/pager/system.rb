@@ -19,6 +19,10 @@ module TTY
       def initialize(options = {})
         super
         @pager_command = options[:command]
+        unless self.class.can?
+          raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
+                                   " system. Try using BasicPager instead."
+        end
       end
 
       # Find first available system command for paging
@@ -67,6 +71,15 @@ module TTY
         true
       rescue NotImplementedError
         false
+      end
+
+      # Check if fork & comman exist
+      #
+      # @return [Boolean]
+      #
+      # @api public
+      def self.can?
+        self.fork? && self.available?
       end
 
       # Use system command to page output text

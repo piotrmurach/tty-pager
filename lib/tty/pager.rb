@@ -92,7 +92,7 @@ module TTY
     def find_available(options)
       if !enabled?
         NullPager.new
-      elsif !Pager.jruby? && SystemPager.fork? && SystemPager.available?
+      elsif !Pager.jruby? && SystemPager.can?
         SystemPager.new(options)
       else
         BasicPager.new(options)
