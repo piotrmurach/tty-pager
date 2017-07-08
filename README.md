@@ -32,9 +32,14 @@ Or install it yourself as:
 
     $ gem install tty-pager
 
-## 1. Usage
+
+## Overview
 
 The **TTY::Pager** on initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a `NullPager` is used and content is simply printed out to stdout, otherwise a check is performed to find system executable to perform pagination natively with `SystemPager`. However, if no system executable is found, a `BasicPager` is used which is a pure Ruby implementation that will work with any ruby interpreter.
+
+## 1. Usage
+
+In order to let **TTY::Pager** pick the best paging mechanism automatically do:
 
 ```ruby
 pager = TTY::Pager.new
@@ -52,18 +57,43 @@ If you want to use specific pager you can do so by invoking it directly
 pager = TTY::Pager::BasicPager.new
 ```
 
-If you want to disable the pager pass the `:enabled` option:
+## 2. Interface
+
+### :enabled
+
+If you want to disable the pager pass the `:enabled` option set to `false`:
 
 ```ruby
 pager = TTY::Pager.new enabled: false
 ```
 
-For the `BasicPager` you can also pass a `:prompt` option to change the page break text:
+### :width
+
+The `BasicPager` allows to wrap content at given width:
+
+```ruby
+pager = TTY::Pager::BasicPager.new width: 80
+```
+
+### :prompt
+
+For the `BasicPager` you can pass a `:prompt` option to change the page break text:
 
 ```ruby
 prompt = -> (page_num) { output.puts "Page -#{page_num}- Press enter to continue" }
 pager = TTY::Pager::BasicPager.new prompt: prompt
 ```
+
+### :command
+
+You can force `SystemPager` to always use a specific paging tool by passing the `:command` option:
+
+```ruby
+TTY::Pager.new command; 'less -R'
+TTY::Pager::SystemPager.new command: 'less -R'
+```
+
+### PAGER
 
 By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager`. Therefore, if you wish to set your prefered pager you can either set up your shell like so:
 
