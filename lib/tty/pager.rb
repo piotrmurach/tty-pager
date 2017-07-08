@@ -9,6 +9,8 @@ require_relative "pager/version"
 
 module TTY
   class Pager
+    Error = Class.new(StandardError)
+
     # Create a pager
     #
     # @param [Hash] options
