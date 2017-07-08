@@ -31,7 +31,14 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
       "any map; ",
       "true ",
       "",
-      "--- Page -1- Press enter/return to continue (or q to quit) ---",
+      "--- Page ",
+      "-1- Press ",
+      "e",
+      "nter/retur",
+      "n to ",
+      "continue ",
+      "(or q to ",
+      "quit) ---",
       "places ",
       "never are.\n"
     ].join("\n"))
@@ -111,7 +118,7 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
     input << "\n\n\n"
     input.rewind
     pager = described_class.new(output: output, input: input,
-                                width: 1, height: 5)
+                                width: 80, height: 5)
     pager.page(text)
     expect(output.string).to eq([
       "a",

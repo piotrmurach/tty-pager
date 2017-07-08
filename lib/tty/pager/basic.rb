@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # coding: utf-8
 
 require 'verse'
@@ -9,6 +10,35 @@ module TTY
     #
     # @api public
     class BasicPager < Pager
+      PAGE_BREAK = "\n--- Page -%s- " \
+                    "Press enter/return to continue " \
+                    "(or q to quit) ---".freeze
+      # Create a basic pager
+      #
+      # @option options [Integer] :height
+      #   the terminal height
+      # @option options [Integer] :width
+      #   the terminal width
+      #
+      # @api public
+      def initialize(options = {})
+        super
+        @height  = options.fetch(:height) { page_height }
+        @width   = options.fetch(:width)  { page_width }
+        @prompt  = options.fetch(:prompt) { default_prompt }
+        prompt_height = PAGE_BREAK.lines.size
+        @height -= prompt_height
+      end
+
+      # Default prompt for paging
+      #
+      # @return [Proc]
+      #
+      # @api private
+      def default_prompt
+        proc { |page_num| output.puts Verse.wrap(PAGE_BREAK % page_num, @width) }
+      end
+
       # Page text
       #
       # @api public
