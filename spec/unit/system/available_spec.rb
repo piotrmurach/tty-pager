@@ -33,7 +33,8 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
 
     it "does not error" do
       allow(pager).to receive(:executables).and_return(execs)
-      expect(pager.available).to eql("less")
+      allow(pager).to receive(:command_exists?).with('less') { true }
+      expect(pager.available).to eql('less')
     end
   end
 
