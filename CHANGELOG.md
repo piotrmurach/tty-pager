@@ -1,13 +1,13 @@
 # Change log
 
-## [v0.8.0] - 2017-07-xx
+## [v0.8.0] - 2017-07-14
 
 ### Added
 * Add :command option to SystemPager to enforce choice of pagination tool
 * Add Error type for specific error notifications
 
 ### Changed
-* Change SystemPager to prevent initialization if not supported
+* Change SystemPager to prevent initialization if pager isn't supported
 
 ### Fixed
 * Fix BasicPager to take terminal width into account when displaying page break messages
