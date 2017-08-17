@@ -12,14 +12,12 @@ rvm:
   - 2.3.3
   - 2.4.1
   - ruby-head
-  - jruby-9000
+  - jruby-9.1.5.0
   - jruby-head
-  - rbx-3
 matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
-    - rvm: rbx-3
   fast_finish: true
 branches:
   only: master
