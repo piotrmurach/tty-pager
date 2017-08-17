@@ -84,26 +84,19 @@ module TTY
     #
     # If the user disabled paging then a NullPager is returned,
     # otherwise a check is performed to find native system
-    # utility to perform pagination with SystemPager. Finally,
-    # if no system utility exists a BasicPager is used which
-    # is pure Ruby implementation.
+    # command to perform pagination with SystemPager. Finally,
+    # if no system command is found, a BasicPager is used which
+    # is a pure Ruby implementation known to work on any platform.
     #
     # @api private
     def find_available(options)
       if !enabled?
         NullPager.new
-      elsif !Pager.jruby? && SystemPager.can?
+      elsif SystemPager.available?
         SystemPager.new(options)
       else
         BasicPager.new(options)
       end
-    end
-
-    # Check if running on jruby
-    #
-    # @api private
-    def self.jruby?
-      RbConfig::CONFIG['ruby_install_name'] == 'jruby'
     end
   end # Pager
 end # TTY

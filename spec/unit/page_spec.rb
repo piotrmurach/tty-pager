@@ -14,10 +14,9 @@ RSpec.describe TTY::Pager, '.page' do
     expect(TTY::Pager::NullPager).to have_received(:new)
   end
 
-  it "selects basic pager on non tty systems" do
+  it "selects BasicPager when no paging command is available" do
     basic_pager = spy(:basic_pager)
-    allow(described_class).to receive(:jruby?) { false }
-    allow(TTY::Pager::SystemPager).to receive(:can?) { false }
+    allow(TTY::Pager::SystemPager).to receive(:available?) { false }
     allow(TTY::Pager::BasicPager).to receive(:new) { basic_pager }
 
     pager = described_class.new
@@ -27,10 +26,9 @@ RSpec.describe TTY::Pager, '.page' do
     expect(basic_pager).to have_received(:page).with(text)
   end
 
-  it "selects system pager on systems with tty" do
+  it "selects SystemPager when paging command is available" do
     system_pager = spy(:system_pager)
-    allow(described_class).to receive(:jruby?) { false }
-    allow(TTY::Pager::SystemPager).to receive(:can?) { true }
+    allow(TTY::Pager::SystemPager).to receive(:available?) { true }
     allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
 
     pager = described_class.new
