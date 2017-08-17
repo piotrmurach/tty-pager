@@ -1,4 +1,5 @@
-# coding: utf-8
+# encoding: utf-8
+# frozen_string_literal: true
 
 require 'tty-which'
 
@@ -19,9 +20,11 @@ module TTY
       def initialize(options = {})
         super
         @pager_command = options[:command]
-        unless self.class.can?
+        unless self.class.available?
           raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
-                                   " system. Try using BasicPager instead."
+                                   " system due to lack of appropriate pager" \
+                                   " executable. Install `less` like pager or" \
+                                   " try using `BasicPager` instead." \
         end
       end
 
@@ -60,28 +63,6 @@ module TTY
         !available(*commands).nil?
       end
 
-      # Check if fork is supported
-      #
-      # @return [Boolean]
-      #
-      # @api public
-      def self.fork?
-        pid = fork {}
-        exit unless pid
-        true
-      rescue NotImplementedError
-        false
-      end
-
-      # Check if fork & comman exist
-      #
-      # @return [Boolean]
-      #
-      # @api public
-      def self.can?
-        self.fork? && self.available?
-      end
-
       # Use system command to page output text
       #
       # @example
@@ -95,29 +76,19 @@ module TTY
       #
       # @api public
       def page(text, &callback)
-        read_io, write_io = IO.pipe
+        return text unless input.tty?
 
-        pid = fork do
-          write_io.close
-          input.reopen(read_io)
-          read_io.close
+        write_io = open("|#{pager_command}", 'w')
+        pid      = write_io.pid
 
-          # Wait until we have input before we start the pager
-          IO.select [input]
-
-          begin
-            exec(pager_command)
-          rescue SystemCallError
-            exit 1
-          end
-        end
-
-        read_io.close
         write_io.write(text)
         write_io.close
 
-        _, status = Process.waitpid2(pid)
+        _, status = Process.waitpid2(pid, Process::WNOHANG)
         status.success?
+      rescue Errno::ECHILD
+        # on jruby 9x waiting on pid raises
+        true
       end
 
       private
