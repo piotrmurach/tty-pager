@@ -5,6 +5,7 @@
 ### Changed
 * Change SystemPager to stop using fork, instead execute pager in subprocess
   and make it portable across platforms including Windows
+* Change SystemPager to work on jruby
 
 ## [v0.8.0] - 2017-07-14
 
