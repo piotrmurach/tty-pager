@@ -11,7 +11,7 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     allow(pager).to receive(:open).and_return(write_io)
     allow(write_io).to receive(:pid).and_return(pid)
     status = double(:status, :success? => true)
-    allow(Process).to receive(:waitpid2).with(pid, 1).and_return([1, status])
+    allow(Process).to receive(:waitpid2).with(pid, any_args).and_return([1, status])
 
     expect(pager.page(text)).to eq(true)
     expect(write_io).to have_received(:write).with(text)
