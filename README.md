@@ -35,7 +35,7 @@ Or install it yourself as:
 
 ## Overview
 
-The **TTY::Pager** on initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a `NullPager` is used and content is simply printed out to stdout, otherwise a check is performed to find system executable to perform pagination natively with `SystemPager`. However, if no system executable is found, a `BasicPager` is used which is a pure Ruby implementation that will work with any ruby interpreter.
+The **TTY::Pager** on initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a `NullPager` is used, which either returns text as is or simply prints it out to stdout on tty devices. Otherwise a check is performed to find paging command to page text with `SystemPager`. However, if no paging command is found, a `BasicPager` is used which is a pure Ruby implementation that is guaranteed to work with any ruby interpreter and any platform.
 
 ## 1. Usage
 
