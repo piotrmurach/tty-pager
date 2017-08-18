@@ -4,7 +4,8 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
   it "executes the pager command in a subprocess" do
     text     = "I try all things, I achieve what I can.\n"
     allow(TTY::Pager::SystemPager).to receive(:available?).and_return(true)
-    pager    = described_class.new #(output: output, input: input)
+    output   = double(:output, :tty? => true)
+    pager    = described_class.new(output: output)
     write_io = spy
     pid      = 12345
 
