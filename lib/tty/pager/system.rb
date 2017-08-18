@@ -76,7 +76,7 @@ module TTY
       #
       # @api public
       def page(text, &callback)
-        return text unless input.tty?
+        return text unless output.tty?
 
         write_io = open("|#{pager_command}", 'w')
         pid      = write_io.pid
