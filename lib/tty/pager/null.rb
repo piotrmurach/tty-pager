@@ -8,6 +8,8 @@ module TTY
       #
       # @api public
       def page(text, &callback)
+        return text unless output.tty?
+
         output.puts(text)
       end
     end
