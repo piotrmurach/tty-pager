@@ -1,11 +1,14 @@
 # Change log
 
-## [v0.9.0] - 2017-08-xx
+## [v0.9.0] - 2017-08-18
 
 ### Changed
 * Change SystemPager to stop using fork, instead execute pager in subprocess
   and make it portable across platforms including Windows
 * Change SystemPager to work on jruby
+* Change NullPager to only print to stdout on tty device
+* Change Pager to select SystemPager when paging command exists
+* Remove jruby? checks from pager selection
 
 ## [v0.8.0] - 2017-07-14
 
