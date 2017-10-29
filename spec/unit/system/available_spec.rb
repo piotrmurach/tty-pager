@@ -1,5 +1,3 @@
-# coding: utf-8
-
 RSpec.describe TTY::Pager::SystemPager, '#available' do
   let(:execs)   { ['less', 'more'] }
 

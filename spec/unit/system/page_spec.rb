@@ -1,5 +1,3 @@
-# coding: utf-8
-
 RSpec.describe TTY::Pager::SystemPager, '.page' do
   it "executes the pager command in a subprocess" do
     text     = "I try all things, I achieve what I can.\n"

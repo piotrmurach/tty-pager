@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 RSpec.describe TTY::Pager::SystemPager, '#new' do
   it "raises error if system paging is not supported" do
     allow(TTY::Pager::SystemPager).to receive(:available?).and_return(false)

@@ -1,5 +1,3 @@
-# coding: utf-8
-
 RSpec.describe TTY::Pager::SystemPager, '#command_exists?' do
   subject(:pager) { described_class }
 

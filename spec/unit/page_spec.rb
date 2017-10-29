@@ -1,5 +1,3 @@
-# coding: utf-8
-
 RSpec.describe TTY::Pager, '.page' do
   let(:output) { StringIO.new }
 
