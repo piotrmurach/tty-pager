@@ -1,11 +1,9 @@
-# coding: utf-8
-
 require 'tty-screen'
 
-require_relative "pager/basic"
-require_relative "pager/null"
-require_relative "pager/system"
-require_relative "pager/version"
+require_relative 'pager/basic'
+require_relative 'pager/null'
+require_relative 'pager/system'
+require_relative 'pager/version'
 
 module TTY
   class Pager
