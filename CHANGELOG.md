@@ -1,5 +1,12 @@
 # Change log
 
+## [v0.10.0] - 2017-10-29
+
+### Changed
+* Change tty-screen dependency version
+* Change gemspec to require Ruby >= 2.0.0
+* Remove encoding comments
+
 ## [v0.9.0] - 2017-08-18
 
 ### Changed
@@ -62,6 +69,7 @@
 ### Changed
 * Change SystemPager to correctly paginate inside a process.
 
+[v0.10.0]: https://github.com/peter-murach/tty-prompt/compare/v0.9.0...v0.10.0
 [v0.9.0]: https://github.com/peter-murach/tty-prompt/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/peter-murach/tty-prompt/compare/v0.7.1...v0.8.0
 [v0.7.1]: https://github.com/peter-murach/tty-prompt/compare/v0.7.0...v0.7.1
