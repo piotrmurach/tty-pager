@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe TTY::Pager::BasicPager, '.page' do
   let(:input)  { StringIO.new }
   let(:output) { StringIO.new }
@@ -16,8 +18,7 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
   end
 
   it "breaks text exceeding terminal width" do
-    text = ""
-    text << "It is not down on any map; true places never are.\n"
+    text = "It is not down on any map; true places never are.\n"
     input << "\n"
     input.rewind
     pager = described_class.new(output: output, input: input,
@@ -43,13 +44,13 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
   end
 
   it "continues paging when enter is pressed" do
-    text = ""
+    text = []
     10.times { text << "I try all things, I achieve what I can.\n"}
     input << "\n\n\n"
     input.rewind
     pager = described_class.new(output: output, input: input,
                                 width: 100, height: 5)
-    pager.page(text)
+    pager.page(text.join)
     expect(output.string).to eq([
       "I try all things, I achieve what I can.",
       "I try all things, I achieve what I can.",
@@ -71,13 +72,13 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
   end
 
   it "stops paging when q is pressed" do
-    text = ""
+    text = []
     10.times { text << "I try all things, I achieve what I can.\n"}
     input << "\nq\n"
     input.rewind
     pager = described_class.new(output: output, input: input,
                                 width: 100, height: 5)
-    pager.page(text)
+    pager.page(text.join)
     expect(output.string).to eq([
       "I try all things, I achieve what I can.",
       "I try all things, I achieve what I can.",
@@ -93,14 +94,14 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
   end
 
   it "allows to change paging prompt" do
-    text = ""
+    text = []
     5.times { text << "I try all things, I achieve what I can.\n"}
     input << "\nq\n"
     input.rewind
     prompt = proc { |num| output.puts "Page -#{num}-" }
     pager = described_class.new(output: output, input: input,
                                 width: 100, height: 5, prompt: prompt)
-    pager.page(text)
+    pager.page(text.join)
     expect(output.string).to eq([
       "I try all things, I achieve what I can.",
       "I try all things, I achieve what I can.",

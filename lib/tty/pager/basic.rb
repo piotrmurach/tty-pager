@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'verse'
+require 'strings'
 
 module TTY
   class Pager
@@ -36,7 +36,7 @@ module TTY
       #
       # @api private
       def default_prompt
-        proc { |page_num| output.puts Verse.wrap(PAGE_BREAK % page_num, @width) }
+        proc { |page_num| output.puts Strings.wrap(PAGE_BREAK % page_num, @width) }
       end
 
       # Page text
@@ -53,7 +53,7 @@ module TTY
             chunk = leftover
             leftover = []
           end
-          wrapped_line = Verse.wrap(line, @width)
+          wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
             if lines_left > 0
               chunk << line_part
