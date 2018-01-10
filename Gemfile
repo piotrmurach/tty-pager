@@ -3,12 +3,11 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'yard',    '~> 0.8.7'
+  gem 'yard', '~> 0.9.12'
 end
 
 group :metrics do
-  gem 'coveralls', '~> 0.8.1'
-  gem 'simplecov', '~> 0.10.0'
+  gem 'coveralls', '~> 0.8.21'
+  gem 'simplecov', '~> 0.14.1'
   gem 'yardstick', '~> 0.9.9'
-  gem 'term-ansicolor', '=1.3.2'
 end
