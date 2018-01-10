@@ -1,8 +1,9 @@
 # TTY::Pager [![Gitter](https://badges.gitter.im/Join%20Chat.svg)][gitter]
+
 [![Gem Version](https://badge.fury.io/rb/tty-pager.svg)][gem]
 [![Build Status](https://secure.travis-ci.org/piotrmurach/tty-pager.svg?branch=master)][travis]
 [![Build status](https://ci.appveyor.com/api/projects/status/3auc1vi3mk5puqai?svg=true)][appveyor]
-[![Code Climate](https://codeclimate.com/github/piotrmurach/tty-pager/badges/gpa.svg)][codeclimate]
+[![Maintainability](https://api.codeclimate.com/v1/badges/636da0d02231b7f3e50f/maintainability)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/github/piotrmurach/tty-pager/badge.svg)][coverage]
 [![Inline docs](http://inch-ci.org/github/piotrmurach/tty-pager.svg?branch=master)][inchpages]
 
@@ -10,7 +11,7 @@
 [gem]: http://badge.fury.io/rb/tty-pager
 [travis]: http://travis-ci.org/piotrmurach/tty-pager
 [appveyor]: https://ci.appveyor.com/project/piotrmurach/tty-pager
-[codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager
+[codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager/maintainability
 [coverage]: https://coveralls.io/github/piotrmurach/tty-pager
 [inchpages]: http://inch-ci.org/github/piotrmurach/tty-pager
 
@@ -120,4 +121,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/piotrm
 
 ## Copyright
 
-Copyright (c) 2015-2017 Piotr Murach. See LICENSE for further details.
+Copyright (c) 2015-2018 Piotr Murach. See LICENSE for further details.
