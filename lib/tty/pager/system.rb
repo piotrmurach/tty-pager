@@ -41,8 +41,8 @@ module TTY
       #
       # @api public
       def self.available(*commands)
-        commands = commands.empty? ? executables : commands
-        commands
+        execs = commands.empty? ? executables : commands
+        execs
           .compact.map(&:strip).reject(&:empty?).uniq
           .find { |cmd| command_exists?(cmd.split.first) }
       end
@@ -90,8 +90,6 @@ module TTY
         true
       end
 
-      private
-
       # List possible executables for output paging
       #
       # @return [Array[String]]
@@ -100,9 +98,8 @@ module TTY
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
          command_exists?('git') ? `git config --get-all core.pager` : nil,
-         'less', 'more', 'cat', 'pager']
+         'less', 'more', 'cat', 'pager', 'pg', 'most'].compact
       end
-      private_class_method :executables
 
       # Check if command exists
       #
