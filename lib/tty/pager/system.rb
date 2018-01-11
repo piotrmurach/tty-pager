@@ -9,38 +9,47 @@ module TTY
     #
     # @api public
     class SystemPager < Pager
-      # Create a system pager
+      # Check if command exists
       #
-      # @param [Hash] options
-      # @option options [String] :command
-      #   the command to use for paging
+      # @example
+      #   command_exists?('less) # => true
       #
-      # @api public
-      def initialize(options = {})
-        super
-        @pager_command = options[:command]
-        unless self.class.available?
-          raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
-                                   " system due to lack of appropriate pager" \
-                                   " executable. Install `less` like pager or" \
-                                   " try using `BasicPager` instead." \
-        end
+      # @param [String] command
+      #   the command to check
+      #
+      # @return [Boolean]
+      #
+      # @api private
+      def self.command_exists?(command)
+        TTY::Which.exist?(command)
       end
 
-      # Find first available system command for paging
+      # List possible executables for output paging
+      #
+      # @return [Array[String]]
+      #
+      # @api private
+      def self.executables
+        [ENV['GIT_PAGER'], ENV['PAGER'],
+         command_exists?('git') ? `git config --get-all core.pager` : nil,
+         'less', 'more', 'cat', 'pager', 'pg', 'most'].compact
+      end
+
+      # Find first available termainal pager program executable
       #
       # @example Basic usage
-      #   available # => 'less'
+      #   find_executable # => 'less'
       #
       # @example Usage with commands
-      #   available('less', 'cat')  # => 'less'
+      #   find_executable('less', 'cat')  # => 'less'
       #
       # @param [Array[String]] commands
       #
-      # @return [String]
+      # @return [String, nil]
+      #   the found executable or nil when not found
       #
       # @api public
-      def self.available(*commands)
+      def self.find_executable(*commands)
         execs = commands.empty? ? executables : commands
         execs
           .compact.map(&:strip).reject(&:empty?).uniq
@@ -59,7 +68,25 @@ module TTY
       #
       # @api public
       def self.available?(*commands)
-        !available(*commands).nil?
+        !find_executable(*commands).nil?
+      end
+
+      # Create a system pager
+      #
+      # @param [Hash] options
+      # @option options [String] :command
+      #   the command to use for paging
+      #
+      # @api public
+      def initialize(options = {})
+        super
+        @pager_command = options[:command]
+        unless self.class.available?
+          raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
+                                   " system due to lack of appropriate pager" \
+                                   " executable. Install `less` like pager or" \
+                                   " try using `BasicPager` instead." \
+        end
       end
 
       # Use system command to page output text
@@ -90,32 +117,6 @@ module TTY
         true
       end
 
-      # List possible executables for output paging
-      #
-      # @return [Array[String]]
-      #
-      # @api private
-      def self.executables
-        [ENV['GIT_PAGER'], ENV['PAGER'],
-         command_exists?('git') ? `git config --get-all core.pager` : nil,
-         'less', 'more', 'cat', 'pager', 'pg', 'most'].compact
-      end
-
-      # Check if command exists
-      #
-      # @example
-      #   command_exists?('less) # => true
-      #
-      # @param [String] command
-      #   the command to check
-      #
-      # @return [Boolean]
-      #
-      # @api private
-      def self.command_exists?(command)
-        TTY::Which.exist?(command)
-      end
-
       # The pager command to run
       #
       # @return [String]
@@ -126,7 +127,7 @@ module TTY
         @pager_command = if @pager_command && commands.empty?
                            @pager_command
                          else
-                           self.class.available(*commands)
+                           self.class.find_executable(*commands)
                          end
       end
     end # SystemPager

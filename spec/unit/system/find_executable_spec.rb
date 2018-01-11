@@ -1,4 +1,4 @@
-RSpec.describe TTY::Pager::SystemPager, '#available' do
+RSpec.describe TTY::Pager::SystemPager, '#find_executable' do
   let(:execs)   { ['less', 'more'] }
 
   subject(:pager) { described_class }
@@ -7,22 +7,22 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     allow(pager).to receive(:executables).and_return(execs)
     allow(pager).to receive(:command_exists?).with('less') { true }
     allow(pager).to receive(:command_exists?).with('more') { false }
-    expect(pager.available).to eql('less')
+    expect(pager.find_executable).to eql('less')
   end
 
   it "doesn't find command" do
     allow(pager).to receive(:executables).and_return(execs)
     allow(pager).to receive(:command_exists?) { false }
-    expect(pager.available).to be_nil
+    expect(pager.find_executable).to be_nil
   end
 
   it "takes precedence over other commands" do
     allow(pager).to receive(:command_exists?).with('more') { true }
-    expect(pager.available('more')).to eql('more')
+    expect(pager.find_executable('more')).to eql('more')
   end
 
   it "allows to query for available command" do
-    allow(pager).to receive(:available).with('less') { true }
+    allow(pager).to receive(:find_executable).with('less') { true }
     expect(pager.available?('less')).to eq(true)
   end
 
@@ -32,7 +32,7 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     it "does not error" do
       allow(pager).to receive(:executables).and_return(execs)
       allow(pager).to receive(:command_exists?).with('less') { true }
-      expect(pager.available).to eql('less')
+      expect(pager.find_executable).to eql('less')
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe TTY::Pager::SystemPager, '#available' do
     it "finds the command" do
       allow(pager).to receive(:executables).and_return(execs)
       allow(pager).to receive(:command_exists?).with("diff-so-fancy") { true }
-      expect(pager.available).to eql(execs.first)
+      expect(pager.find_executable).to eql(execs.first)
     end
   end
 end
