@@ -14,7 +14,7 @@ RSpec.describe TTY::Pager, '.page' do
 
   it "selects BasicPager when no paging command is available" do
     basic_pager = spy(:basic_pager)
-    allow(TTY::Pager::SystemPager).to receive(:available?) { false }
+    allow(TTY::Pager::SystemPager).to receive(:exec_available?) { false }
     allow(TTY::Pager::BasicPager).to receive(:new) { basic_pager }
 
     pager = described_class.new
@@ -26,7 +26,7 @@ RSpec.describe TTY::Pager, '.page' do
 
   it "selects SystemPager when paging command is available" do
     system_pager = spy(:system_pager)
-    allow(TTY::Pager::SystemPager).to receive(:available?) { true }
+    allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
     allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
 
     pager = described_class.new

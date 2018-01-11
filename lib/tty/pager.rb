@@ -90,7 +90,7 @@ module TTY
     def find_available(options)
       if !enabled?
         NullPager.new
-      elsif SystemPager.available?
+      elsif SystemPager.exec_available?
         SystemPager.new(options)
       else
         BasicPager.new(options)

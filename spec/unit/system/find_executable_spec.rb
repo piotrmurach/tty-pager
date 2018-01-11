@@ -23,7 +23,7 @@ RSpec.describe TTY::Pager::SystemPager, '#find_executable' do
 
   it "allows to query for available command" do
     allow(pager).to receive(:find_executable).with('less') { true }
-    expect(pager.available?('less')).to eq(true)
+    expect(pager.exec_available?('less')).to eq(true)
   end
 
   context "when given nil, blank, and whitespace commands" do
