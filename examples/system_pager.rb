@@ -1,6 +1,4 @@
-# encoding: utf-8
-
-require 'tty-pager'
+require_relative '../lib/tty-pager'
 
 ENV['PAGER']='less'
 
