@@ -1,12 +1,16 @@
 # Change log
 
-## [v0.11.0] - 2018-01-xx
+## [v0.11.0] - 2018-01-11
 
 ### Added
-* Add `pg`, `most` and `more` to executables lookup
+* Add `pg` and `most` to executables lookup
 
 ### Changed
 * Change verse to strings dependency
+* Change SystemPager to make all class methods public
+* Change SystemPager#available to #find_executable
+* Change SystemPager#available? to #exec_available
+* Change Pager#find_available to #select_pager and make class method
 
 ### Fixed
 * Fix Pager throwing exception if git is not installed by Katelyn Schiesser(@slowbro)
