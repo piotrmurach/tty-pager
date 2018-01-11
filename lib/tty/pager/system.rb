@@ -99,7 +99,7 @@ module TTY
       # @api private
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
-         `git config --get-all core.pager`,
+         command_exists?('git') ? `git config --get-all core.pager`.strip : nil,
          'less', 'more', 'cat', 'pager']
       end
       private_class_method :executables
