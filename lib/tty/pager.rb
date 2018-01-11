@@ -9,6 +9,25 @@ module TTY
   class Pager
     Error = Class.new(StandardError)
 
+    # Select an appriopriate pager
+    #
+    # If the user disabled paging then a NullPager is returned,
+    # otherwise a check is performed to find native system
+    # command to perform pagination with SystemPager. Finally,
+    # if no system command is found, a BasicPager is used which
+    # is a pure Ruby implementation known to work on any platform.
+    #
+    # @api private
+    def self.select_pager(enabled)
+      if !enabled
+        NullPager
+      elsif SystemPager.exec_available?
+        SystemPager
+      else
+        BasicPager
+      end
+    end
+
     # Create a pager
     #
     # @param [Hash] options
@@ -28,7 +47,7 @@ module TTY
       @enabled = options.fetch(:enabled) { true }
 
       if self.class == TTY::Pager
-        @pager = find_available(options)
+        @pager = self.class.select_pager(@enabled).new(options)
       end
     end
 
@@ -78,23 +97,5 @@ module TTY
 
     attr_reader :pager
 
-    # Find available pager
-    #
-    # If the user disabled paging then a NullPager is returned,
-    # otherwise a check is performed to find native system
-    # command to perform pagination with SystemPager. Finally,
-    # if no system command is found, a BasicPager is used which
-    # is a pure Ruby implementation known to work on any platform.
-    #
-    # @api private
-    def find_available(options)
-      if !enabled?
-        NullPager.new
-      elsif SystemPager.exec_available?
-        SystemPager.new(options)
-      else
-        BasicPager.new(options)
-      end
-    end
   end # Pager
 end # TTY
