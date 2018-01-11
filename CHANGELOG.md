@@ -2,8 +2,14 @@
 
 ## [v0.11.0] - 2018-01-xx
 
+### Added
+* Add `pg`, `most` and `more` to executables lookup
+
 ### Changed
 * Change verse to strings dependency
+
+### Fixed
+* Fix Pager throwing exception if git is not installed by Katelyn Schiesser(@slowbro)
 
 ## [v0.10.0] - 2017-10-29
 
