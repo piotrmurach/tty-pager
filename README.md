@@ -90,7 +90,7 @@ pager = TTY::Pager::BasicPager.new prompt: prompt
 You can force `SystemPager` to always use a specific paging tool by passing the `:command` option:
 
 ```ruby
-TTY::Pager.new command; 'less -R'
+TTY::Pager.new command: 'less -R'
 TTY::Pager::SystemPager.new command: 'less -R'
 ```
 
