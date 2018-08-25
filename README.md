@@ -1,7 +1,6 @@
 <div align="center">
-  <a href="http://piotrmurach.github.io/tty"><img width="130" src="https://cdn.rawgit.com/piotrmurach/tty/master/images/tty.png" alt="tty logo" /></a>
+  <a href="https://piotrmurach.github.io/tty" target="_blank"><img width="130" src="https://cdn.rawgit.com/piotrmurach/tty/master/images/tty.png" alt="tty logo" /></a>
 </div>
-<br/>
 
 # TTY::Pager [![Gitter](https://badges.gitter.im/Join%20Chat.svg)][gitter]
 
