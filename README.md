@@ -100,7 +100,7 @@ TTY::Pager::SystemPager.new command: 'less -R'
 
 ### PAGER
 
-By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager`. Therefore, if you wish to set your prefered pager you can either set up your shell like so:
+By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager`. Therefore, if you wish to set your preferred pager you can either set up your shell like so:
 
 ```bash
 PAGER=less
@@ -125,4 +125,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/piotrm
 
 ## Copyright
 
-Copyright (c) 2015-2018 Piotr Murach. See LICENSE for further details.
+Copyright (c) 2015 Piotr Murach. See LICENSE for further details.
