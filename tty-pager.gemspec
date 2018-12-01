@@ -1,4 +1,3 @@
-# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'tty/pager/version'
@@ -20,9 +19,9 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.0.0'
 
-  spec.add_dependency 'tty-screen', '~> 0.6.4'
-  spec.add_dependency 'tty-which',  '~> 0.3.0'
-  spec.add_dependency 'strings',    '~> 0.1.0'
+  spec.add_dependency 'tty-screen', '~> 0.6.5'
+  spec.add_dependency 'tty-which',  '~> 0.4.0'
+  spec.add_dependency 'strings',    '~> 0.1.4'
 
   spec.add_development_dependency 'bundler', '>= 1.5.0', '< 2.0'
   spec.add_development_dependency 'rake'
