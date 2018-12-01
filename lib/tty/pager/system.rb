@@ -32,7 +32,7 @@ module TTY
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
          command_exists?('git') ? `git config --get-all core.pager` : nil,
-         'less', 'more', 'cat', 'pager', 'pg', 'most'].compact
+         'less -r', 'more -r', 'most', 'cat', 'pager', 'pg', ].compact
       end
 
       # Find first available termainal pager program executable
