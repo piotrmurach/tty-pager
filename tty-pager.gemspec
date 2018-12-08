@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = [""]
   spec.summary       = %q{Terminal output paging in a cross-platform way supporting all major ruby interpreters.}
   spec.description   = %q{Terminal output paging in a cross-platform way supporting all major ruby interpreters.}
-  spec.homepage      = "https://github.com/piotrmurach/tty-pager"
+  spec.homepage      = "https://piotrmurach.github.io/tty"
   spec.license       = "MIT"
 
   spec.files         = Dir['{lib,spec,examples}/**/*.rb']
