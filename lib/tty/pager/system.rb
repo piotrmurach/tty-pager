@@ -33,7 +33,7 @@ module TTY
       def self.run_command(*args)
         require 'tempfile'
         out = Tempfile.new('tty-pager')
-        result = system(*args, out: out.path, err: File::NULL, in: File::NULL)
+        result = system(*args, out: out.path, err: out.path, in: File::NULL)
         return if result.nil?
         out.rewind
         out.read
