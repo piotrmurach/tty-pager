@@ -18,10 +18,10 @@ module TTY
     # is a pure Ruby implementation known to work on any platform.
     #
     # @api private
-    def self.select_pager(enabled)
+    def self.select_pager(enabled, commands)
       if !enabled
         NullPager
-      elsif SystemPager.exec_available?
+      elsif SystemPager.exec_available?(*commands)
         SystemPager
       else
         BasicPager
@@ -45,9 +45,10 @@ module TTY
       @input   = options.fetch(:input)  { $stdin }
       @output  = options.fetch(:output) { $stdout }
       @enabled = options.fetch(:enabled) { true }
+      commands = Array(options[:command])
 
       if self.class == TTY::Pager
-        @pager = self.class.select_pager(@enabled).new(options)
+        @pager = self.class.select_pager(@enabled, commands).new(options)
       end
     end
 
