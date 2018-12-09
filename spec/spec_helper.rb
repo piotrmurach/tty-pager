@@ -1,4 +1,6 @@
-if RUBY_VERSION > '1.9' and (ENV['COVERAGE'] || ENV['TRAVIS'])
+# frozen_string_literal: true
+
+if ENV['COVERAGE'] || ENV['TRAVIS']
   require 'simplecov'
   require 'coveralls'
 
