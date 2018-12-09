@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe TTY::Pager::SystemPager, '#command_exists?' do
   subject(:pager) { described_class }
 

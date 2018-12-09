@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe TTY::Pager::SystemPager, '#find_executable' do
   let(:execs)   { ['less', 'more'] }
 
