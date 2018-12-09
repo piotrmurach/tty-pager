@@ -24,6 +24,24 @@ module TTY
         TTY::Which.exist?(command)
       end
 
+      # Run pager command silently with no input and capture output
+      #
+      # @return [nil, String]
+      #   command output or nil if command fails to run
+      #
+      # @api private
+      def self.run_command(*args)
+        require 'tempfile'
+        out = Tempfile.new('tty-pager')
+        result = system(*args, out: out.path, err: File::NULL, in: File::NULL)
+        return if result.nil?
+        out.rewind
+        out.read
+      ensure
+        out.close
+        out.unlink
+      end
+
       # List possible executables for output paging
       #
       # @return [Array[String]]
