@@ -50,7 +50,7 @@ module TTY
       def self.executables
         [ENV['GIT_PAGER'], ENV['PAGER'],
          command_exists?('git') ? `git config --get-all core.pager` : nil,
-         'less -r', 'more -r', 'most', 'cat', 'pager', 'pg', ].compact
+         'less -r', 'more -r', 'most', 'cat', 'pager', 'pg'].compact
       end
 
       # Find first available termainal pager program executable
@@ -122,7 +122,7 @@ module TTY
       #   the success status of launching a process
       #
       # @api public
-      def page(text, &callback)
+      def page(text, &_callback)
         return text unless output.tty?
 
         command = pager_command
