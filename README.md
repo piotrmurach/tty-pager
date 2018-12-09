@@ -56,7 +56,7 @@ Then to perform actual content pagination invoke `page` method with the content 
 pager.page("Very long text...")
 ```
 
-If you want to use specific pager you can do so by invoking it directly
+If you want to use specific pager you can do so by invoking it directly:
 
 ```ruby
 pager = TTY::Pager::BasicPager.new
@@ -69,7 +69,7 @@ pager = TTY::Pager::BasicPager.new
 If you want to disable the pager pass the `:enabled` option set to `false`:
 
 ```ruby
-pager = TTY::Pager.new enabled: false
+pager = TTY::Pager.new(enabled: false)
 ```
 
 ### :width
@@ -77,7 +77,8 @@ pager = TTY::Pager.new enabled: false
 The `BasicPager` allows to wrap content at given width:
 
 ```ruby
-pager = TTY::Pager::BasicPager.new width: 80
+pager = TTY::Pager.new(width: 80)
+pager = TTY::Pager::BasicPager.new(width: 80)
 ```
 
 ### :prompt
@@ -86,16 +87,22 @@ For the `BasicPager` you can pass a `:prompt` option to change the page break te
 
 ```ruby
 prompt = -> (page_num) { output.puts "Page -#{page_num}- Press enter to continue" }
-pager = TTY::Pager::BasicPager.new prompt: prompt
+pager = TTY::Pager::BasicPager.new(prompt: prompt)
 ```
 
 ### :command
 
-You can force `SystemPager` to always use a specific paging tool by passing the `:command` option:
+You can force `SystemPager` to always use a specific paging tool(s) by passing the `:command` option:
 
 ```ruby
-TTY::Pager.new command: 'less -R'
-TTY::Pager::SystemPager.new command: 'less -R'
+TTY::Pager.new(command: 'less -R')
+TTY::Pager::SystemPager.new(command: 'less -R')
+```
+
+You also specify an array of pagers to use:
+
+```ruby
+pager = TTY::Pager.new(command: ['less -r', 'more -r'])
 ```
 
 ### PAGER
