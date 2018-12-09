@@ -122,11 +122,18 @@ module TTY
       def page(text, &callback)
         return text unless output.tty?
 
-        write_io = open("|#{pager_command}", 'w')
-        pid      = write_io.pid
+        command = pager_command
+        out = self.class.run_command(command)
+        # Issue running command, e.g. unsupported flag, fallback to just command
+        if !out.empty?
+          command = pager_command.split.first
+        end
 
-        write_io.write(text)
-        write_io.close
+        pager_io = open("|#{command}", 'w')
+        pid      = pager_io.pid
+
+        pager_io.write(text)
+        pager_io.close
 
         _, status = Process.waitpid2(pid, Process::WNOHANG)
         status.success?
