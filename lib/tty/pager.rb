@@ -41,7 +41,7 @@ module TTY
     #   disable/enable text paging
     #
     # @api public
-    def initialize(options = {})
+    def initialize(**options)
       @input   = options.fetch(:input)  { $stdin }
       @output  = options.fetch(:output) { $stdout }
       @enabled = options.fetch(:enabled) { true }

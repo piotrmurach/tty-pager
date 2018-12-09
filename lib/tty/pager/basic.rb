@@ -21,7 +21,7 @@ module TTY
       #   the terminal width
       #
       # @api public
-      def initialize(options = {})
+      def initialize(**options)
         super
         @height  = options.fetch(:height) { page_height }
         @width   = options.fetch(:width)  { page_width }
