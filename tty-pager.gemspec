@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.0.0'
 
   spec.add_dependency 'tty-screen', '~> 0.6'
-  spec.add_dependency 'tty-which',  '~> 0.4.0'
+  spec.add_dependency 'tty-which',  '~> 0.4'
   spec.add_dependency 'strings',    '~> 0.1.4'
 
   spec.add_development_dependency 'bundler', '>= 1.5.0', '< 2.0'
