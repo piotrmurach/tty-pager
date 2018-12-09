@@ -96,10 +96,13 @@ module TTY
       #   the command to use for paging
       #
       # @api public
-      def initialize(options = {})
+      def initialize(**options)
         super
-        @pager_command = options[:command]
-        unless self.class.exec_available?
+        @pager_command = nil
+        commands = Array(options[:command])
+        pager_command(*commands)
+
+        if @pager_command.nil?
           raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
                                    " system due to lack of appropriate pager" \
                                    " executable. Install `less` like pager or" \
