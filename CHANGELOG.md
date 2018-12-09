@@ -1,5 +1,18 @@
 # Change log
 
+## [v0.12.0] - 2018-12-09
+
+### Added
+* Add SystemPager#run_command for running pager command silently and capturing output
+
+### Changed
+* Change SystemPager#new to allow specifying more than one custom command
+* Change SystemPager#page to check if pager command can be run with flags before paging content
+* Change to update tty-screen and tty-which dependencies
+
+### Fixed
+* Fix SystemPager to page content with ANSI codes
+
 ## [v0.11.0] - 2018-01-11
 
 ### Added
@@ -84,6 +97,11 @@
 ### Changed
 * Change SystemPager to correctly paginate inside a process.
 
+### [v0.1.0] - 2015-05-31
+
+* Initial release
+
+[v0.12.0]: https://github.com/piotrmurach/tty-pager/compare/v0.11.0...v0.12.0
 [v0.11.0]: https://github.com/piotrmurach/tty-pager/compare/v0.10.0...v0.11.0
 [v0.10.0]: https://github.com/piotrmurach/tty-pager/compare/v0.9.0...v0.10.0
 [v0.9.0]: https://github.com/piotrmurach/tty-pager/compare/v0.8.0...v0.9.0
