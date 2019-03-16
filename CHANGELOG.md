@@ -1,5 +1,10 @@
 # Change log
 
+## [v0.12.1] - 2019-03-16
+
+### Fixed
+* Fix exception when use tty-pager with tty-file by @tiev
+
 ## [v0.12.0] - 2018-12-09
 
 ### Added
