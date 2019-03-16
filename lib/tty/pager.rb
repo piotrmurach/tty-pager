@@ -99,6 +99,5 @@ module TTY
     attr_reader :input
 
     attr_reader :pager
-
   end # Pager
 end # TTY
