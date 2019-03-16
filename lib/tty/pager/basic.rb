@@ -11,7 +11,7 @@ module TTY
     class BasicPager < Pager
       PAGE_BREAK = "\n--- Page -%s- " \
                     "Press enter/return to continue " \
-                    "(or q to quit) ---".freeze
+                    "(or q to quit) ---"
 
       # Create a basic pager
       #
