@@ -138,4 +138,19 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
       "a"
     ].join("\n"))
   end
+
+  describe "block form" do
+    it "calls .close when the block is done" do
+      basic_pager = spy(:basic_pager)
+      allow(described_class).to receive(:new) { basic_pager }
+
+      text = "I try all things, I achieve what I can.\n"
+      described_class.page do |pager|
+        pager.write(text)
+      end
+
+      expect(basic_pager).to have_received(:write).with(text)
+      expect(basic_pager).to have_received(:close)
+    end
+  end
 end

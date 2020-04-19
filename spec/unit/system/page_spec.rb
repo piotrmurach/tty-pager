@@ -9,13 +9,30 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     write_io = spy
     pid      = 12345
 
-    allow(pager).to receive(:open).and_return(write_io)
+    allow(IO).to receive(:popen).and_return(write_io)
     allow(write_io).to receive(:pid).and_return(pid)
+    allow(write_io).to receive(:closed?).and_return(false)
     status = double(:status, :success? => true)
     allow(Process).to receive(:waitpid2).with(pid, any_args).and_return([1, status])
 
-    expect(pager.page(text)).to eq(true)
+    pager.page(text)
     expect(write_io).to have_received(:write).with(text)
     expect(write_io).to have_received(:close)
+  end
+
+  describe "block form" do
+    it "calls .close when the block is done" do
+      system_pager = spy(:system_pager)
+      allow(described_class).to receive(:exec_available?) { true }
+      allow(described_class).to receive(:new) { system_pager }
+
+      text = "I try all things, I achieve what I can.\n"
+      described_class.page do |pager|
+        pager.write(text)
+      end
+
+      expect(system_pager).to have_received(:write).with(text)
+      expect(system_pager).to have_received(:close)
+    end
   end
 end

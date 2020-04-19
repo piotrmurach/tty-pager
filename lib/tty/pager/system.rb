@@ -98,6 +98,7 @@ module TTY
       # @api public
       def initialize(**options)
         super
+        @pager_io = nil
         @pager_command = nil
         commands = Array(options[:command])
         pager_command(*commands)
@@ -122,27 +123,95 @@ module TTY
       #   the success status of launching a process
       #
       # @api public
-      def page(text, &_callback)
-        return text unless output.tty?
+      def page(text)
+        write(text)
+      rescue PagerClosed
+        # do nothing
+      ensure
+        close
+      end
+
+      # Spawn the pager process
+      #
+      # @return [PagerIO]
+      #   A wrapper for the external pager
+      #
+      # @api private
+      def spawn_pager
+        # In case there's a previous pager running:
+        close
 
         command = pager_command
         out = self.class.run_command(command)
         # Issue running command, e.g. unsupported flag, fallback to just command
-        if !out.empty?
+        unless out.empty?
           command = pager_command.split.first
         end
 
-        pager_io = open("|#{command}", 'w')
-        pid      = pager_io.pid
+        PagerIO.new(command)
+      end
 
-        pager_io.write(text)
-        pager_io.close
+      # Send text to the pager process. Starts a new process if it hasn't been
+      # started yet.
+      #
+      # @param [Array<String>] *args
+      #   strings to send to the pager
+      #
+      # @raise [PagerClosed]
+      #   strings to send to the pager
+      #
+      # @api public
+      def write(*args)
+        @pager_io ||= spawn_pager
+        @pager_io.write(*args)
+        self
+      end
+      alias << write
 
-        _, status = Process.waitpid2(pid, Process::WNOHANG)
-        status.success?
-      rescue Errno::ECHILD
-        # on jruby 9x waiting on pid raises
+      # Send text to the pager process. Starts a new process if it hasn't been
+      # started yet.
+      #
+      # @param [Array<String>] *args
+      #   strings to send to the pager
+      #
+      # @return [Boolean]
+      #   the success status of writing to the pager process
+      #
+      # @api public
+      def try_write(*args)
+        write(*args)
         true
+      rescue PagerClosed
+        false
+      end
+
+      # Send a line of text, ending in a newline, to the pager process. Starts
+      # a new process if it hasn't been started yet.
+      #
+      # @raise [PagerClosed]
+      #   if the pager was closed
+      #
+      # @return [SystemPager]
+      #
+      # @api public
+      def puts(text)
+        @pager_io ||= spawn_pager
+        @pager_io.puts(text)
+        self
+      end
+
+      # Stop the pager, wait for the process to finish. If no pager has been
+      # started, returns true.
+      #
+      # @return [Boolean]
+      #   the exit status of the child process
+      #
+      # @api public
+      def close
+        return true unless @pager_io
+        success = @pager_io.close
+        @pager_io = nil
+        success
       end
 
       # The pager command to run
@@ -157,6 +226,43 @@ module TTY
                          else
                            self.class.find_executable(*commands)
                          end
+      end
+
+      # A wrapper for an external process.
+      #
+      # @api private
+      class PagerIO
+        def initialize(command)
+          @command = command
+          @io      = IO.popen(@command, 'w')
+          @pid     = @io.pid
+        end
+
+        def write(*args)
+          io_call(:write, *args)
+        end
+
+        def puts(*args)
+          io_call(:puts, *args)
+        end
+
+        def close
+          return true if @io.closed?
+          @io.close
+          _, status = Process.waitpid2(@pid, Process::WNOHANG)
+          status.success?
+        rescue Errno::ECHILD
+          # on jruby 9x waiting on pid raises
+          true
+        end
+
+        private
+
+        def io_call(method_name, *args)
+          @io.public_send(method_name, *args)
+        rescue Errno::EPIPE
+          raise PagerClosed.new("The pager process (`#{@command}`) was closed")
+        end
       end
     end # SystemPager
   end # Pager
