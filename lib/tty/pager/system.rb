@@ -123,8 +123,12 @@ module TTY
       #
       # @api public
       def page(text, &_callback)
-        return text unless output.tty?
+        init
+        write(text)
+        wait
+      end
 
+      def init
         command = pager_command
         out = self.class.run_command(command)
         # Issue running command, e.g. unsupported flag, fallback to just command
@@ -132,13 +136,25 @@ module TTY
           command = pager_command.split.first
         end
 
-        pager_io = open("|#{command}", 'w')
-        pid      = pager_io.pid
+        @pager_io = open("|#{command}", 'w')
+        @pid      = @pager_io.pid
+      end
 
-        pager_io.write(text)
-        pager_io.close
+      def write(text)
+        raise "Pager was not initialized" if @pager_io.nil? || @pid.nil?
+        @pager_io.write(text)
+        true
+      rescue Errno::EPIPE => e
+        # pager has likely been closed before output was done
+        false
+      end
 
-        _, status = Process.waitpid2(pid, Process::WNOHANG)
+      def wait
+        raise "Pager was not initialized" if @pager_io.nil? || @pid.nil?
+        @pager_io.close
+        _, status = Process.waitpid2(@pid, Process::WNOHANG)
+        @pager_io = nil
+        @pid = nil
         status.success?
       rescue Errno::ECHILD
         # on jruby 9x waiting on pid raises
