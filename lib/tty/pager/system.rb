@@ -144,7 +144,7 @@ module TTY
         start if !running?
         @pager_io.write(text)
         true
-      rescue Errno::EPIPE => e
+      rescue Errno::EPIPE
         # pager has likely been closed before output was done
         false
       end
