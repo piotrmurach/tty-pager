@@ -28,6 +28,8 @@ module TTY
         @prompt  = options.fetch(:prompt) { default_prompt }
         prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
+
+        @running = false
       end
 
       # Default prompt for paging
@@ -43,20 +45,18 @@ module TTY
       #
       # @api public
       def page(text, &callback)
-        init
         write(text, &callback)
         wait
       end
 
-      def init
-        @page_num = 1
-        @leftover = []
-        @lines_left = @height
+      def start
+        @running = true
+        @state = State.new(@height)
 
-        @queue = Queue.new
-        @thread = Thread.new do
+        @state.queue = Queue.new
+        @state.thread = Thread.new do
           loop do
-            message = @queue.pop
+            message = @state.queue.pop
             if message.nil?
               sleep 0.1
               next
@@ -76,62 +76,69 @@ module TTY
         end
       end
 
-      # TODO (2020-04-21) Encapsulate thread, queue, etc in a "State" struct
       def write(text, &callback)
-        raise "Pager was not initialized" if @thread.nil? || @queue.nil? || @page_num.nil? || @leftover.nil? || @lines_left.nil?
+        start if !running?
 
         text.lines.each do |line|
           chunk = []
-          if !@leftover.empty?
-            chunk = @leftover
-            @leftover = []
+          if !@state.leftover.empty?
+            chunk = @state.leftover
+            @state.leftover = []
           end
           wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
-            if @lines_left > 0
+            if @state.lines_left > 0
               chunk << line_part
-              @lines_left -= 1
+              @state.lines_left -= 1
             else
-              @leftover << line_part
+              @state.leftover << line_part
             end
           end
-          @queue << [:print, chunk.join]
+          @state.queue << [:print, chunk.join]
 
-          if @lines_left == 0
+          if @state.lines_left == 0
             return false unless continue_paging?
-            @lines_left = @height
-            if @leftover.size > 0
-              @lines_left -= @leftover.size
+            @state.lines_left = @height
+            if @state.leftover.size > 0
+              @state.lines_left -= @state.leftover.size
             end
-            @page_num += 1
-            return !callback.call(@page_num) unless callback.nil?
+            @state.page_num += 1
+            return !callback.call(@state.page_num) unless callback.nil?
           end
         end
 
-        if @leftover.size > 0
-          @queue << [:print, @leftover.join]
+        if @state.leftover.size > 0
+          @state.queue << [:print, @state.leftover.join]
         end
 
         true
       end
 
       def wait
-        @queue << [:quit, nil]
-        @thread.join
+        return if !running?
+        @state.queue << [:quit, nil]
+        @state.thread.join
 
-        @queue = nil
-        @thread = nil
-        @page_num = nil
-        @leftover = nil
-        @lines_left = nil
+        @state = nil
+        @running = nil
       end
 
       private
 
       # @api private
       def continue_paging?
-        @queue << [:prompt, @page_num]
+        @state.queue << [:prompt, @state.page_num]
         !@input.gets.chomp[/q/i]
+      end
+
+      class State
+        attr_accessor :queue, :thread, :lines_left, :page_num, :leftover
+
+        def initialize(height)
+          @page_num = 1
+          @leftover = []
+          @lines_left = height
+        end
       end
     end # BasicPager
   end # Pager

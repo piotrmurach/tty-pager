@@ -52,6 +52,8 @@ module TTY
       if self.class == TTY::Pager
         @pager = self.class.select_pager(@enabled, commands).new(options)
       end
+
+      @running = false
     end
 
     # Check if pager is enabled
@@ -61,6 +63,15 @@ module TTY
     # @api public
     def enabled?
       !!@enabled
+    end
+
+    # Check if pager is currently running
+    #
+    # @return [Boolean]
+    #
+    # @api public
+    def running?
+      !!@running
     end
 
     # Page the given text through the available pager
