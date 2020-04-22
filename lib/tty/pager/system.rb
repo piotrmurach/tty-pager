@@ -131,7 +131,7 @@ module TTY
         command = pager_command
         out = self.class.run_command(command)
         # Issue running command, e.g. unsupported flag, fallback to just command
-        if !out.empty?
+        unless out.empty?
           command = pager_command.split.first
         end
 
@@ -141,7 +141,7 @@ module TTY
       end
 
       def write(text)
-        start if !running?
+        start unless running?
         @pager_io.write(text)
         true
       rescue Errno::EPIPE
@@ -150,7 +150,7 @@ module TTY
       end
 
       def wait
-        return true if !running?
+        return true unless running?
         @pager_io.close
         _, status = Process.waitpid2(@pid, Process::WNOHANG)
         @pager_io = nil

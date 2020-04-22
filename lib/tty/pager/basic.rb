@@ -115,7 +115,7 @@ module TTY
       end
 
       def wait
-        return if !running?
+        return unless running?
         @state.queue << [:quit, nil]
         @state.thread.join
 
