@@ -135,7 +135,7 @@ module TTY
           command = pager_command.split.first
         end
 
-        @pager_io = open("|#{command}", 'w')
+        @pager_io = open("|#{command}", "w")
         @pid      = @pager_io.pid
         @running  = true
       end

@@ -77,17 +77,17 @@ module TTY
       end
 
       def write(text, &callback)
-        start if !running?
+        start unless running?
 
         text.lines.each do |line|
           chunk = []
-          if !@state.leftover.empty?
+          unless @state.leftover.empty?
             chunk = @state.leftover
             @state.leftover = []
           end
           wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
-            if @state.lines_left > 0
+            if @state.lines_left.positive?
               chunk << line_part
               @state.lines_left -= 1
             else
@@ -96,10 +96,10 @@ module TTY
           end
           @state.queue << [:print, chunk.join]
 
-          if @state.lines_left == 0
+          if @state.lines_left.zero?
             return false unless continue_paging?
             @state.lines_left = @height
-            if @state.leftover.size > 0
+            unless @state.leftover.empty?
               @state.lines_left -= @state.leftover.size
             end
             @state.page_num += 1
@@ -107,7 +107,7 @@ module TTY
           end
         end
 
-        if @state.leftover.size > 0
+        unless @state.leftover.empty?
           @state.queue << [:print, @state.leftover.join]
         end
 
