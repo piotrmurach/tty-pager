@@ -9,7 +9,7 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     write_io = spy
     pid      = 12345
 
-    allow(pager).to receive(:open).and_return(write_io)
+    allow(IO).to receive(:popen).and_return(write_io)
     allow(write_io).to receive(:pid).and_return(pid)
     status = double(:status, :success? => true)
     allow(Process).to receive(:waitpid2).with(pid, any_args).and_return([1, status])
