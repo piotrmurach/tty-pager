@@ -54,25 +54,17 @@ module TTY
         wait
 
         state = State.new(@height)
-        state.queue = Queue.new
-        state.thread = Thread.new do
+        state.printer = Fiber.new do |command, message|
           loop do
-            message = state.queue.pop
-            if message.nil?
-              sleep 0.1
-              next
-            end
-
-            type    = message[0]
-            payload = message[1]
-
-            case type
+            case command
             when :quit then break
-            when :print then output.print(payload)
-            when :prompt then instance_exec(payload, &@prompt)
+            when :print then output.print(message)
+            when :prompt then instance_exec(message, &@prompt)
             else
-              raise "Unknown message type: #{type}"
+              raise "Unknown command type: #{command}"
             end
+
+            command, message = Fiber.yield
           end
         end
 
@@ -97,7 +89,7 @@ module TTY
               @state.leftover << line_part
             end
           end
-          @state.queue << [:print, chunk.join]
+          @state.printer.resume(:print, chunk.join)
 
           if @state.lines_left.zero?
             return false unless continue_paging?
@@ -111,7 +103,7 @@ module TTY
         end
 
         unless @state.leftover.empty?
-          @state.queue << [:print, @state.leftover.join]
+          @state.printer.resume(:print, @state.leftover.join)
         end
 
         true
@@ -119,8 +111,7 @@ module TTY
 
       def wait
         return unless @state
-        @state.queue << [:quit, nil]
-        @state.thread.join
+        @state.printer.resume(:quit, nil)
         @state = nil
       end
 
@@ -128,12 +119,12 @@ module TTY
 
       # @api private
       def continue_paging?
-        @state.queue << [:prompt, @state.page_num]
+        @state.printer.resume(:prompt, @state.page_num)
         !@input.gets.chomp[/q/i]
       end
 
       class State
-        attr_accessor :queue, :thread, :lines_left, :page_num, :leftover
+        attr_accessor :printer, :lines_left, :page_num, :leftover
 
         def initialize(height)
           @page_num = 1
