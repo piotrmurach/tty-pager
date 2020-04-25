@@ -51,35 +51,23 @@ module TTY
 
       def write(text, &callback)
         text.lines.each do |line|
-          chunk = []
-          unless @state.leftover.empty?
-            chunk = @state.leftover
-            @state.leftover = []
-          end
           wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
-            if @state.lines_left.positive?
-              chunk << line_part
-              @state.lines_left -= 1
-            else
-              @state.leftover << line_part
-            end
+            @pagination.push(line_part)
           end
-          output.print(chunk.join)
 
-          if @state.lines_left.zero?
-            return false unless continue_paging?
-            @state.lines_left = @height
-            unless @state.leftover.empty?
-              @state.lines_left -= @state.leftover.size
-            end
-            @state.page_num += 1
-            return !callback.call(@state.page_num) unless callback.nil?
+          output.print(@pagination.take_lines.join)
+
+          if @pagination.at_page_end?
+            return false if stop_paging?
+            @pagination.start_next_page(@height)
+
+            return !callback.call(@pagination.page_num) unless callback.nil?
           end
         end
 
-        unless @state.leftover.empty?
-          output.print(@state.leftover.join)
+        if @pagination.has_leftover?
+          output.print(@pagination.leftover.join)
         end
 
         true
@@ -90,24 +78,55 @@ module TTY
       end
 
       def reset
-        @state = State.new(@height)
+        @pagination = Pagination.new(@height)
       end
 
       private
 
       # @api private
-      def continue_paging?
-        @prompt.call(@state.page_num)
-        !@input.gets.chomp[/q/i]
+      def stop_paging?
+        @prompt.call(@pagination.page_num)
+        @input.gets.chomp =~ /q/i
       end
 
-      class State
-        attr_accessor :page_num, :leftover, :lines_left
+      class Pagination
+        attr_reader :page_num, :leftover
 
-        def initialize(height)
-          @page_num   = 1
-          @leftover   = []
-          @lines_left = height
+        def initialize(lines_per_page)
+          @page_num     = 1
+          @current_page = []
+          @leftover     = []
+          @lines_left   = lines_per_page
+        end
+
+        def at_page_end?
+          @lines_left.zero?
+        end
+
+        def has_leftover?
+          !@leftover.empty?
+        end
+
+        def take_lines
+          lines = @current_page
+          @current_page = []
+          lines
+        end
+
+        def start_next_page(lines_per_page)
+          @current_page = []
+          @lines_left = lines_per_page
+          @lines_left -= @leftover.size
+          @page_num += 1
+        end
+
+        def push(line)
+          if @lines_left.positive?
+            @current_page << line
+            @lines_left -= 1
+          else
+            @leftover << line
+          end
         end
       end
     end # BasicPager
