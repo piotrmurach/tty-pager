@@ -121,7 +121,7 @@ module TTY
         end
 
         def push(line)
-          if @lines_left.positive?
+          if @lines_left > 0
             @current_page << line
             @lines_left -= 1
           else
