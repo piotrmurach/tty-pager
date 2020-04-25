@@ -29,7 +29,7 @@ module TTY
         prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
 
-        @state = nil
+        @printer = nil
       end
 
       # Default prompt for paging
@@ -38,7 +38,7 @@ module TTY
       #
       # @api private
       def default_prompt
-        proc { |page_num| output.puts Strings.wrap(PAGE_BREAK % page_num, @width) }
+        proc { |page_num| output.puts Strings.wrap(PAGE_BREAK % page_num, width) }
       end
 
       # Page text
@@ -52,84 +52,100 @@ module TTY
       def start
         # In case there's a previous pager running:
         wait
-
-        state = State.new(@height)
-        state.printer = Fiber.new do |command, message|
-          loop do
-            case command
-            when :quit then break
-            when :print then output.print(message)
-            when :prompt then instance_exec(message, &@prompt)
-            else
-              raise "Unknown command type: #{command}"
-            end
-
-            command, message = Fiber.yield
-          end
-        end
-
-        state
+        Printer.new(@width, @height, @output, @prompt)
       end
 
       def write(text, &callback)
-        @state ||= start
+        @printer ||= start
 
         text.lines.each do |line|
           chunk = []
-          unless @state.leftover.empty?
-            chunk = @state.leftover
-            @state.leftover = []
+          unless @printer.leftover.empty?
+            chunk = @printer.leftover
+            @printer.leftover = []
           end
           wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
-            if @state.lines_left.positive?
+            if @printer.lines_left.positive?
               chunk << line_part
-              @state.lines_left -= 1
+              @printer.lines_left -= 1
             else
-              @state.leftover << line_part
+              @printer.leftover << line_part
             end
           end
-          @state.printer.resume(:print, chunk.join)
+          @printer.print(chunk.join)
 
-          if @state.lines_left.zero?
+          if @printer.lines_left.zero?
             return false unless continue_paging?
-            @state.lines_left = @height
-            unless @state.leftover.empty?
-              @state.lines_left -= @state.leftover.size
+            @printer.lines_left = @height
+            unless @printer.leftover.empty?
+              @printer.lines_left -= @printer.leftover.size
             end
-            @state.page_num += 1
-            return !callback.call(@state.page_num) unless callback.nil?
+            @printer.page_num += 1
+            return !callback.call(@printer.page_num) unless callback.nil?
           end
         end
 
-        unless @state.leftover.empty?
-          @state.printer.resume(:print, @state.leftover.join)
+        unless @printer.leftover.empty?
+          @printer.print(@printer.leftover.join)
         end
 
         true
       end
 
       def wait
-        return unless @state
-        @state.printer.resume(:quit, nil)
-        @state = nil
+        return unless @printer
+        @printer.quit
+        @printer = nil
       end
 
       private
 
       # @api private
       def continue_paging?
-        @state.printer.resume(:prompt, @state.page_num)
+        @printer.prompt(@printer.page_num)
         !@input.gets.chomp[/q/i]
       end
 
-      class State
-        attr_accessor :printer, :lines_left, :page_num, :leftover
+      class Printer
+        attr_accessor :lines_left, :page_num, :leftover
+        attr_reader :output, :width, :height
 
-        def initialize(height)
-          @page_num = 1
-          @leftover = []
+        def initialize(width, height, output, prompt)
+          @width  = width
+          @height = height
+          @output = output
+          @prompt = prompt
+
+          @page_num   = 1
+          @leftover   = []
           @lines_left = height
+
+          @fiber = Fiber.new do |command, message|
+            loop do
+              case command
+              when :quit then break
+              when :print then @output.print(message)
+              when :prompt then instance_exec(message, &@prompt)
+              else
+                raise "Unknown command type: #{command}"
+              end
+
+              command, message = Fiber.yield
+            end
+          end
+        end
+
+        def print(message)
+          @fiber.resume(:print, message)
+        end
+
+        def prompt(message)
+          @fiber.resume(:prompt, message)
+        end
+
+        def quit
+          @fiber.resume(:quit, nil)
         end
       end
     end # BasicPager
