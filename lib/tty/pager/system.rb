@@ -186,7 +186,7 @@ module TTY
         end
 
         def close
-          status = @io.close
+          @io.close
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
           status
         end
