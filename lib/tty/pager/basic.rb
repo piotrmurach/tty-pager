@@ -29,7 +29,7 @@ module TTY
         prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
 
-        @running = false
+        @state = nil
       end
 
       # Default prompt for paging
@@ -50,13 +50,14 @@ module TTY
       end
 
       def start
-        @running = true
-        @state = State.new(@height)
+        # In case there's a previous pager running:
+        wait
 
-        @state.queue = Queue.new
-        @state.thread = Thread.new do
+        state = State.new(@height)
+        state.queue = Queue.new
+        state.thread = Thread.new do
           loop do
-            message = @state.queue.pop
+            message = state.queue.pop
             if message.nil?
               sleep 0.1
               next
@@ -74,10 +75,12 @@ module TTY
             end
           end
         end
+
+        state
       end
 
       def write(text, &callback)
-        start unless running?
+        @state ||= start
 
         text.lines.each do |line|
           chunk = []
@@ -115,12 +118,10 @@ module TTY
       end
 
       def wait
-        return unless running?
+        return unless @state
         @state.queue << [:quit, nil]
         @state.thread.join
-
         @state = nil
-        @running = nil
       end
 
       private

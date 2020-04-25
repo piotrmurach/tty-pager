@@ -98,6 +98,7 @@ module TTY
       # @api public
       def initialize(**options)
         super
+        @pager_io = nil
         @pager_command = nil
         commands = Array(options[:command])
         pager_command(*commands)
@@ -128,6 +129,9 @@ module TTY
       end
 
       def start
+        # In case there's a previous pager running:
+        wait
+
         command = pager_command
         out = self.class.run_command(command)
         # Issue running command, e.g. unsupported flag, fallback to just command
@@ -135,13 +139,11 @@ module TTY
           command = pager_command.split.first
         end
 
-        @pager_io = IO.popen(command, 'w')
-        @pid      = @pager_io.pid
-        @running  = true
+        PagerIO.new(command)
       end
 
       def write(text)
-        start unless running?
+        @pager_io ||= start
         @pager_io.write(text)
         true
       rescue Errno::EPIPE
@@ -150,17 +152,13 @@ module TTY
       end
 
       def wait
-        return true unless running?
-        @pager_io.close
-        _, status = Process.waitpid2(@pid, Process::WNOHANG)
+        return true unless @pager_io
+        status = @pager_io.close
         @pager_io = nil
-        @pid = nil
         status.success?
       rescue Errno::ECHILD
         # on jruby 9x waiting on pid raises
         true
-      ensure
-        @running = false
       end
 
       # The pager command to run
@@ -175,6 +173,23 @@ module TTY
                          else
                            self.class.find_executable(*commands)
                          end
+      end
+
+      class PagerIO
+        def initialize(command)
+          @io  = IO.popen(command, 'w')
+          @pid = @io.pid
+        end
+
+        def write(*args)
+          @io.write(*args)
+        end
+
+        def close
+          status = @io.close
+          _, status = Process.waitpid2(@pid, Process::WNOHANG)
+          status
+        end
       end
     end # SystemPager
   end # Pager
