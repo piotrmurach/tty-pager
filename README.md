@@ -56,6 +56,28 @@ Then to perform actual content pagination invoke `page` method with the content 
 pager.page("Very long text...")
 ```
 
+If, instead of a single string, you'd like to paginate a long-running operation, you could use the `write` method instead and run `wait` to block until the user has closed the pager:
+
+```ruby
+File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
+  # do some work with the line:
+  sleep 0.1
+
+  # try to send it to the pager:
+  success = pager.write(line)
+
+  if success
+    # keep going to the next line
+  else
+    # pager was closed, stop writing
+    break
+  end
+end
+
+# wait for the interface to be closed
+pager.wait
+```
+
 If you want to use specific pager you can do so by invoking it directly:
 
 ```ruby
