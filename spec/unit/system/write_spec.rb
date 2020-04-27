@@ -13,4 +13,26 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
     pager.write("two")
     pager.wait
   end
+
+  it "delegates any write calls to the internal pager" do
+    pager = described_class.new
+    pager_io = StringIO.new
+
+    expect(pager).to receive(:start).once.and_return(pager_io)
+
+    pager.write("one")
+    pager.write("two")
+
+    expect(pager_io.string).to eq("onetwo")
+  end
+
+  it "returns false if the pager process raises an exception" do
+    pager = described_class.new
+    pager_io = double("PagerIO")
+
+    expect(pager).to receive(:start).once.and_return(pager_io)
+    expect(pager_io).to receive(:write).and_raise(Errno::EPIPE)
+
+    expect(pager.write("one")).to be_falsey
+  end
 end

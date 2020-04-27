@@ -20,4 +20,14 @@ RSpec.describe TTY::Pager::NullPager, '.page' do
     expect(pager.page(text)).to eq(text)
     expect(output.string).to eq('')
   end
+
+  it "doesn't write a newline if one wasn't given" do
+    allow(output).to receive(:tty?).and_return(true)
+    pager = described_class.new(output: output)
+    text = "I try all things, I achieve what I can."
+
+    pager.page(text)
+
+    expect(output.string).to eq(text)
+  end
 end
