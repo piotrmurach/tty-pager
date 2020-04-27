@@ -58,23 +58,35 @@ module TTY
       # @api public
       def write(text, &callback)
         text.lines.each do |line|
+          chunk = []
+          if !@leftover.empty?
+            chunk = @leftover
+            @leftover = []
+          end
           wrapped_line = Strings.wrap(line, @width)
           wrapped_line.lines.each do |line_part|
-            @pagination.push(line_part)
+            if @lines_left > 0
+              chunk << line_part
+              @lines_left -= 1
+            else
+              @leftover << line_part
+            end
           end
+          output.print(chunk.join)
 
-          output.print(@pagination.take_lines.join)
-
-          if @pagination.at_page_end?
-            return false if stop_paging?
-            @pagination.start_next_page(@height)
-
-            return !callback.call(@pagination.page_num) unless callback.nil?
+          if @lines_left == 0
+            return false unless continue_paging?(@page_num)
+            @lines_left = @height
+            if @leftover.size > 0
+              @lines_left -= @leftover.size
+            end
+            @page_num += 1
+            return !callback.call(@page_num) unless callback.nil?
           end
         end
 
-        if @pagination.has_leftover?
-          output.print(@pagination.leftover.join)
+        if @leftover.size > 0
+          output.print(@leftover.join)
         end
 
         true
@@ -91,54 +103,15 @@ module TTY
       private
 
       def reset
-        @pagination = Pagination.new(@height)
+        @page_num = 1
+        @leftover = []
+        @lines_left = @height
       end
 
       # @api private
-      def stop_paging?
-        @prompt.call(@pagination.page_num)
-        @input.gets.chomp =~ /q/i
-      end
-
-      class Pagination
-        attr_reader :page_num, :leftover
-
-        def initialize(lines_per_page)
-          @page_num     = 1
-          @current_page = []
-          @leftover     = []
-          @lines_left   = lines_per_page
-        end
-
-        def at_page_end?
-          @lines_left.zero?
-        end
-
-        def has_leftover?
-          !@leftover.empty?
-        end
-
-        def take_lines
-          lines = @current_page
-          @current_page = []
-          lines
-        end
-
-        def start_next_page(lines_per_page)
-          @current_page = []
-          @lines_left = lines_per_page
-          @lines_left -= @leftover.size
-          @page_num += 1
-        end
-
-        def push(line)
-          if @lines_left > 0
-            @current_page << line
-            @lines_left -= 1
-          else
-            @leftover << line
-          end
-        end
+      def continue_paging?(page_num)
+        @prompt.call(page_num)
+        !@input.gets.chomp[/q/i]
       end
     end # BasicPager
   end # Pager
