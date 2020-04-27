@@ -49,6 +49,13 @@ module TTY
         reset
       end
 
+      # Write text to the pager, prompting on page end. Returns false if the
+      # pager was closed.
+      #
+      # @return [Boolean]
+      #   the success status of writing to the screen
+      #
+      # @api public
       def write(text, &callback)
         text.lines.each do |line|
           wrapped_line = Strings.wrap(line, @width)
@@ -73,15 +80,19 @@ module TTY
         true
       end
 
+      # Stop the pager, wait for it to clean up
+      #
+      # @api public
       def wait
         reset
+        true
       end
+
+      private
 
       def reset
         @pagination = Pagination.new(@height)
       end
-
-      private
 
       # @api private
       def stop_paging?

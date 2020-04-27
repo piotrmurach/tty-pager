@@ -128,6 +128,12 @@ module TTY
         wait
       end
 
+      # Spawn the pager process
+      #
+      # @return [PagerIO]
+      #   A wrapper for the external pager
+      #
+      # @api private
       def start
         # In case there's a previous pager running:
         wait
@@ -142,6 +148,13 @@ module TTY
         PagerIO.new(command)
       end
 
+      # Send text to the pager process. Starts a new process if it hasn't been
+      # started yet. Returns false if the pager was closed.
+      #
+      # @return [Boolean]
+      #   the success status of writing to the pager process
+      #
+      # @api public
       def write(text)
         @pager_io ||= start
         @pager_io.write(text)
@@ -151,6 +164,13 @@ module TTY
         false
       end
 
+      # Stop the pager, wait for the process to finish. If no pager has been
+      # started, returns true.
+      #
+      # @return [Boolean]
+      #   the exit status of the child process
+      #
+      # @api public
       def wait
         return true unless @pager_io
         status = @pager_io.close
@@ -175,6 +195,9 @@ module TTY
                          end
       end
 
+      # A wrapper for an external process.
+      #
+      # @api private
       class PagerIO
         def initialize(command)
           @io  = IO.popen(command, 'w')

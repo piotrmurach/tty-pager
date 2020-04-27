@@ -78,6 +78,31 @@ module TTY
       self
     end
 
+    # Write the given text to the available pager
+    #
+    # @param [String] text
+    #   the text to send to the pager
+    #
+    # @yield [Integer] page number
+    #
+    # @return [Boolean]
+    #   whether the write succeeded, will be false if the pager was closed
+    #
+    # @api public
+    def write(text, &callback)
+      pager.write(text, &callback)
+    end
+
+    # Wait for the pager to be closed
+    #
+    # @return [Boolean]
+    #   whether the pager exited successfully
+    #
+    # @api public
+    def wait
+      pager.wait
+    end
+
     # The terminal height
     #
     # @api public
