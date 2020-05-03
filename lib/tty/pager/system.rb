@@ -159,6 +159,7 @@ module TTY
         @pager_io ||= spawn_pager
         @pager_io.write(text)
       end
+      alias_method :<<, :write
 
       # Stop the pager, wait for the process to finish. If no pager has been
       # started, returns true.

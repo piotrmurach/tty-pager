@@ -35,4 +35,14 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
 
     expect(pager.write("one")).to eq(false)
   end
+
+  it "is aliased to <<" do
+    pager = described_class.new
+    pager_io = double("PagerIO")
+
+    expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
+    expect(pager_io).to receive(:write).and_return(false)
+
+    expect(pager << "one").to eq(false)
+  end
 end
