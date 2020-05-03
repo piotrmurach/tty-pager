@@ -74,7 +74,7 @@ File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
   end
 end
 
-# wait for the interface to be closed
+# wait for the paging tool to be closed
 pager.wait
 ```
 
