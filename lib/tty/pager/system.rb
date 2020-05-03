@@ -161,6 +161,19 @@ module TTY
       end
       alias_method :<<, :write
 
+      # Send a line of text, ending in a newline, to the pager process. Starts
+      # a new process if it hasn't been started yet. Returns false if the pager
+      # was closed.
+      #
+      # @return [Boolean]
+      #   the success status of writing to the pager process
+      #
+      # @api public
+      def puts(text)
+        @pager_io ||= spawn_pager
+        @pager_io.puts(text)
+      end
+
       # Stop the pager, wait for the process to finish. If no pager has been
       # started, returns true.
       #
@@ -200,11 +213,11 @@ module TTY
         end
 
         def write(*args)
-          @io.write(*args)
-          true
-        rescue Errno::EPIPE
-          # process has likely been closed before output was done
-          false
+          io_call(:write, *args)
+        end
+
+        def puts(*args)
+          io_call(:puts, *args)
         end
 
         def close
@@ -217,6 +230,16 @@ module TTY
         rescue Errno::ECHILD
           # on jruby 9x waiting on pid raises
           true
+        end
+
+        private
+
+        def io_call(method_name, *args)
+          @io.public_send(method_name, *args)
+          true
+        rescue Errno::EPIPE
+          # process has likely been closed before output was done
+          false
         end
       end
     end # SystemPager

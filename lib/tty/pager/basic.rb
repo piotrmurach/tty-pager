@@ -57,6 +57,28 @@ module TTY
       #
       # @api public
       def write(text, &callback)
+        send_text(:write, text, &callback)
+      end
+      alias_method :<<, :write
+
+      # Print a line of text to the pager, prompting on page end. Returns false
+      # if the pager was closed.
+      #
+      # @return [Boolean]
+      #   the success status of writing to the screen
+      #
+      # @api public
+      def puts(text, &callback)
+        send_text(:puts, text, &callback)
+      end
+
+      # The lower-level common implementation of printing methods
+      #
+      # @return [Boolean]
+      #   the success status of writing to the screen
+      #
+      # @api private
+      def send_text(write_method, text, &callback)
         text.lines.each do |line|
           chunk = []
           if !@leftover.empty?
@@ -72,7 +94,7 @@ module TTY
               @leftover << line_part
             end
           end
-          output.print(chunk.join)
+          output.public_send(write_method, chunk.join)
 
           if @lines_left == 0
             return false unless continue_paging?(@page_num)
@@ -86,7 +108,7 @@ module TTY
         end
 
         if @leftover.size > 0
-          output.print(@leftover.join)
+          output.public_send(write_method, @leftover.join)
         end
 
         true

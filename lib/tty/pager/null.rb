@@ -18,6 +18,16 @@ module TTY
 
         output.write(text)
       end
+      alias_method :<<, :write
+
+      # Pass output directly to stdout
+      #
+      # @api public
+      def puts(text, &_callback)
+        return text unless output.tty?
+
+        output.puts(text)
+      end
 
       # Do nothing, always return success
       #

@@ -92,6 +92,22 @@ module TTY
     def write(text, &callback)
       pager.write(text, &callback)
     end
+    alias_method :<<, :write
+
+    # Write a newline-ended line to the available pager
+    #
+    # @param [String] text
+    #   the text to send to the pager
+    #
+    # @yield [Integer] page number
+    #
+    # @return [Boolean]
+    #   whether the write succeeded, will be false if the pager was closed
+    #
+    # @api public
+    def puts(text, &callback)
+      pager.puts(text, &callback)
+    end
 
     # Wait for the pager to be closed
     #
