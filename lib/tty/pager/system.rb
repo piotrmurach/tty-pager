@@ -134,7 +134,7 @@ module TTY
       #   A wrapper for the external pager
       #
       # @api private
-      def start
+      def spawn_pager
         # In case there's a previous pager running:
         wait
 
@@ -156,12 +156,8 @@ module TTY
       #
       # @api public
       def write(text)
-        @pager_io ||= start
+        @pager_io ||= spawn_pager
         @pager_io.write(text)
-        true
-      rescue Errno::EPIPE
-        # pager has likely been closed before output was done
-        false
       end
 
       # Stop the pager, wait for the process to finish. If no pager has been
@@ -173,12 +169,10 @@ module TTY
       # @api public
       def wait
         return true unless @pager_io
-        status = @pager_io.close
+        @pager_io.close
+        success = @pager_io.wait
         @pager_io = nil
-        status.success?
-      rescue Errno::ECHILD
-        # on jruby 9x waiting on pid raises
-        true
+        success
       end
 
       # The pager command to run
@@ -206,12 +200,22 @@ module TTY
 
         def write(*args)
           @io.write(*args)
+          true
+        rescue Errno::EPIPE
+          # process has likely been closed before output was done
+          false
         end
 
         def close
           @io.close
+        end
+
+        def wait
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
-          status
+          status.success?
+        rescue Errno::ECHILD
+          # on jruby 9x waiting on pid raises
+          true
         end
       end
     end # SystemPager

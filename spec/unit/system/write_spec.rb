@@ -5,9 +5,9 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
     allow(TTY::Pager::SystemPager).to receive(:exec_available?).and_return(true)
     output   = double(:output, :tty? => true)
     pager    = described_class.new(output: output)
-    pager_io = double(:pager_io, write: nil, close: double(:success? => true))
+    pager_io = double(:pager_io, write: nil, close: nil, wait: true)
 
-    expect(pager).to receive(:start).once.and_return(pager_io)
+    expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
 
     pager.write("one")
     pager.write("two")
@@ -18,7 +18,7 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
     pager = described_class.new
     pager_io = StringIO.new
 
-    expect(pager).to receive(:start).once.and_return(pager_io)
+    expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
 
     pager.write("one")
     pager.write("two")
@@ -30,9 +30,9 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
     pager = described_class.new
     pager_io = double("PagerIO")
 
-    expect(pager).to receive(:start).once.and_return(pager_io)
-    expect(pager_io).to receive(:write).and_raise(Errno::EPIPE)
+    expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
+    expect(pager_io).to receive(:write).and_return(false)
 
-    expect(pager.write("one")).to be_falsey
+    expect(pager.write("one")).to eq(false)
   end
 end
