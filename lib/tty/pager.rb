@@ -51,7 +51,7 @@ module TTY
       commands = Array(options[:command])
 
       if self.class == TTY::Pager
-        @pager = self.class.select_pager(@enabled, commands).new(options)
+        @pager = self.class.select_pager(@enabled, commands).new(**options)
       end
     end
 
