@@ -125,7 +125,10 @@ module TTY
       # @api public
       def page(text, &_callback)
         write(text)
-        wait
+      rescue PagerClosed
+        # do nothing
+      ensure
+        close
       end
 
       # Spawn the pager process
@@ -136,7 +139,7 @@ module TTY
       # @api private
       def spawn_pager
         # In case there's a previous pager running:
-        wait
+        close
 
         command = pager_command
         out = self.class.run_command(command)
@@ -149,29 +152,52 @@ module TTY
       end
 
       # Send text to the pager process. Starts a new process if it hasn't been
-      # started yet. Returns false if the pager was closed.
+      # started yet.
+      #
+      # @param [Array<String>] *args
+      #   strings to send to the pager
+      #
+      # @raise [PagerClosed]
+      #   strings to send to the pager
+      #
+      # @api public
+      def write(*args)
+        @pager_io ||= spawn_pager
+        @pager_io.write(*args)
+        self
+      end
+      alias_method :<<, :write
+
+      # Send text to the pager process. Starts a new process if it hasn't been
+      # started yet.
+      #
+      # @param [Array<String>] *args
+      #   strings to send to the pager
       #
       # @return [Boolean]
       #   the success status of writing to the pager process
       #
       # @api public
-      def write(text)
-        @pager_io ||= spawn_pager
-        @pager_io.write(text)
+      def try_write(*args)
+        write(*args)
+        true
+      rescue PagerClosed
+        false
       end
-      alias_method :<<, :write
 
       # Send a line of text, ending in a newline, to the pager process. Starts
-      # a new process if it hasn't been started yet. Returns false if the pager
-      # was closed.
+      # a new process if it hasn't been started yet.
       #
-      # @return [Boolean]
-      #   the success status of writing to the pager process
+      # @raise [PagerClosed]
+      #   if the pager was closed
+      #
+      # @return [SystemPager]
       #
       # @api public
       def puts(text)
         @pager_io ||= spawn_pager
         @pager_io.puts(text)
+        self
       end
 
       # Stop the pager, wait for the process to finish. If no pager has been
@@ -181,10 +207,9 @@ module TTY
       #   the exit status of the child process
       #
       # @api public
-      def wait
+      def close
         return true unless @pager_io
-        @pager_io.close
-        success = @pager_io.wait
+        success = @pager_io.close
         @pager_io = nil
         success
       end
@@ -222,9 +247,6 @@ module TTY
 
         def close
           @io.close
-        end
-
-        def wait
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
           status.success?
         rescue Errno::ECHILD
@@ -236,10 +258,8 @@ module TTY
 
         def io_call(method_name, *args)
           @io.public_send(method_name, *args)
-          true
         rescue Errno::EPIPE
-          # process has likely been closed before output was done
-          false
+          raise PagerClosed
         end
       end
     end # SystemPager

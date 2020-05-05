@@ -32,7 +32,7 @@ module TTY
       # Do nothing, always return success
       #
       # @api public
-      def wait
+      def close
         true
       end
     end

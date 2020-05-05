@@ -46,8 +46,27 @@ module TTY
       # @api public
       def page(text, &callback)
         write(text, &callback)
+      rescue PagerClosed
+        # do nothing
+      ensure
         reset
       end
+
+      # Write text to the pager, prompting on page end.
+      #
+      # @raise [PagerClosed]
+      #   if the pager was closed
+      #
+      # @return [TTY::Pager::BasicPager]
+      #
+      # @api public
+      def write(*args, &callback)
+        args.each do |text|
+          send_text(:write, text, &callback)
+        end
+        self
+      end
+      alias_method :<<, :write
 
       # Write text to the pager, prompting on page end. Returns false if the
       # pager was closed.
@@ -56,16 +75,17 @@ module TTY
       #   the success status of writing to the screen
       #
       # @api public
-      def write(text, &callback)
-        send_text(:write, text, &callback)
+      def try_write(*args, &callback)
+        write(text, &callback)
+        true
+      rescue PagerClosed
+        false
       end
-      alias_method :<<, :write
 
-      # Print a line of text to the pager, prompting on page end. Returns false
-      # if the pager was closed.
+      # Print a line of text to the pager, prompting on page end.
       #
-      # @return [Boolean]
-      #   the success status of writing to the screen
+      # @raise [PagerClosed]
+      #   if the pager was closed
       #
       # @api public
       def puts(text, &callback)
@@ -97,27 +117,25 @@ module TTY
           output.public_send(write_method, chunk.join)
 
           if @lines_left == 0
-            return false unless continue_paging?(@page_num)
+            raise PagerClosed unless continue_paging?(@page_num)
             @lines_left = @height
             if @leftover.size > 0
               @lines_left -= @leftover.size
             end
             @page_num += 1
-            return !callback.call(@page_num) unless callback.nil?
+            callback.call(@page_num) unless callback.nil?
           end
         end
 
         if @leftover.size > 0
           output.public_send(write_method, @leftover.join)
         end
-
-        true
       end
 
       # Stop the pager, wait for it to clean up
       #
       # @api public
-      def wait
+      def close
         reset
         true
       end

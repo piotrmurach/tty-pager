@@ -10,6 +10,7 @@ require_relative 'pager/version'
 module TTY
   class Pager
     Error = Class.new(StandardError)
+    PagerClosed = Class.new(Error)
 
     # Select an appriopriate pager
     #
@@ -54,6 +55,18 @@ module TTY
       end
     end
 
+    def self.page(**options, &block)
+      instance = new(**options)
+
+      begin
+        block.call(instance)
+      rescue PagerClosed
+        # do nothing
+      ensure
+        instance.close
+      end
+    end
+
     # Check if pager is enabled
     #
     # @return [Boolean]
@@ -80,17 +93,17 @@ module TTY
 
     # Write the given text to the available pager
     #
-    # @param [String] text
-    #   the text to send to the pager
+    # @param [Array<String>] *args
+    #   strings to send to the pager
     #
     # @yield [Integer] page number
     #
-    # @return [Boolean]
-    #   whether the write succeeded, will be false if the pager was closed
+    # @raise [PagerClosed]
+    #   if the write failed due to a closed pager tool
     #
     # @api public
-    def write(text, &callback)
-      pager.write(text, &callback)
+    def write(*args, &callback)
+      pager.write(*args, &callback)
     end
     alias_method :<<, :write
 
@@ -109,14 +122,14 @@ module TTY
       pager.puts(text, &callback)
     end
 
-    # Wait for the pager to be closed
+    # Close the pager tool, wait for it to finish
     #
     # @return [Boolean]
     #   whether the pager exited successfully
     #
     # @api public
-    def wait
-      pager.wait
+    def close
+      pager.close
     end
 
     # The terminal height
