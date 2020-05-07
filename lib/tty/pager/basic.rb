@@ -44,8 +44,8 @@ module TTY
       # Page text
       #
       # @api public
-      def page(text, &callback)
-        write(text, &callback)
+      def page(text)
+        write(text)
       rescue PagerClosed
         # do nothing
       ensure
@@ -60,9 +60,9 @@ module TTY
       # @return [TTY::Pager::BasicPager]
       #
       # @api public
-      def write(*args, &callback)
+      def write(*args)
         args.each do |text|
-          send_text(:write, text, &callback)
+          send_text(:write, text)
         end
         self
       end
@@ -75,8 +75,8 @@ module TTY
       #   the success status of writing to the screen
       #
       # @api public
-      def try_write(*args, &callback)
-        write(text, &callback)
+      def try_write(*args)
+        write(text)
         true
       rescue PagerClosed
         false
@@ -88,8 +88,8 @@ module TTY
       #   if the pager was closed
       #
       # @api public
-      def puts(text, &callback)
-        send_text(:puts, text, &callback)
+      def puts(text)
+        send_text(:puts, text)
       end
 
       # The lower-level common implementation of printing methods
@@ -98,7 +98,7 @@ module TTY
       #   the success status of writing to the screen
       #
       # @api private
-      def send_text(write_method, text, &callback)
+      def send_text(write_method, text)
         text.lines.each do |line|
           chunk = []
           if !@leftover.empty?
@@ -123,7 +123,6 @@ module TTY
               @lines_left -= @leftover.size
             end
             @page_num += 1
-            callback.call(@page_num) unless callback.nil?
           end
         end
 

@@ -86,8 +86,8 @@ module TTY
     # @return [TTY::Pager]
     #
     # @api public
-    def page(text, &callback)
-      pager.page(text, &callback)
+    def page(text)
+      pager.page(text)
       self
     end
 
@@ -96,14 +96,15 @@ module TTY
     # @param [Array<String>] *args
     #   strings to send to the pager
     #
-    # @yield [Integer] page number
-    #
     # @raise [PagerClosed]
     #   if the write failed due to a closed pager tool
     #
+    # @return [TTY::Pager]
+    #
     # @api public
-    def write(*args, &callback)
-      pager.write(*args, &callback)
+    def write(*args)
+      pager.write(*args)
+      self
     end
     alias_method :<<, :write
 
@@ -112,14 +113,12 @@ module TTY
     # @param [String] text
     #   the text to send to the pager
     #
-    # @yield [Integer] page number
-    #
-    # @return [Boolean]
-    #   whether the write succeeded, will be false if the pager was closed
+    # @return [TTY::Pager]
     #
     # @api public
-    def puts(text, &callback)
-      pager.puts(text, &callback)
+    def puts(text)
+      pager.puts(text)
+      self
     end
 
     # Close the pager tool, wait for it to finish

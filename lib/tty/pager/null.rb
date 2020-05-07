@@ -6,14 +6,14 @@ module TTY
       # Pass output directly to stdout
       #
       # @api public
-      def page(text, &callback)
-        write(text, &callback)
+      def page(text)
+        write(text)
       end
 
       # Pass output directly to stdout
       #
       # @api public
-      def write(text, &_callback)
+      def write(text)
         return text unless output.tty?
 
         output.write(text)
@@ -23,7 +23,7 @@ module TTY
       # Pass output directly to stdout
       #
       # @api public
-      def puts(text, &_callback)
+      def puts(text)
         return text unless output.tty?
 
         output.puts(text)

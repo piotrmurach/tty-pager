@@ -123,7 +123,7 @@ module TTY
       #   the success status of launching a process
       #
       # @api public
-      def page(text, &_callback)
+      def page(text)
         write(text)
       rescue PagerClosed
         # do nothing
