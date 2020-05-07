@@ -233,8 +233,9 @@ module TTY
       # @api private
       class PagerIO
         def initialize(command)
-          @io  = IO.popen(command, 'w')
-          @pid = @io.pid
+          @command = command
+          @io      = IO.popen(@command, 'w')
+          @pid     = @io.pid
         end
 
         def write(*args)
@@ -260,7 +261,7 @@ module TTY
         def io_call(method_name, *args)
           @io.public_send(method_name, *args)
         rescue Errno::EPIPE
-          raise PagerClosed
+          raise PagerClosed.new("The pager process (`#{@command}`) was closed")
         end
       end
     end # SystemPager

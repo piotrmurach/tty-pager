@@ -117,7 +117,10 @@ module TTY
           output.public_send(write_method, chunk.join)
 
           if @lines_left == 0
-            raise PagerClosed unless continue_paging?(@page_num)
+            unless continue_paging?(@page_num)
+              raise PagerClosed.new("The pager tool was closed")
+            end
+
             @lines_left = @height
             if @leftover.size > 0
               @lines_left -= @leftover.size
