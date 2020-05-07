@@ -28,11 +28,12 @@ RSpec.describe TTY::Pager::SystemPager, '.write' do
 
   it "is aliased to <<" do
     pager = described_class.new
-    pager_io = double("PagerIO")
+    pager_io = spy("PagerIO")
 
     expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
-    expect(pager_io).to receive(:write)
 
     pager << "one"
+
+    expect(pager_io).to have_received(:write)
   end
 end
