@@ -246,6 +246,7 @@ module TTY
         end
 
         def close
+          return true if @io.closed?
           @io.close
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
           status.success?
