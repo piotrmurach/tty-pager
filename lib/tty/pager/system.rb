@@ -166,7 +166,7 @@ module TTY
         @pager_io.write(*args)
         self
       end
-      alias_method :<<, :write
+      alias << write
 
       # Send text to the pager process. Starts a new process if it hasn't been
       # started yet.

@@ -106,7 +106,7 @@ module TTY
       pager.write(*args)
       self
     end
-    alias_method :<<, :write
+    alias << :write
 
     # Write a newline-ended line to the available pager
     #

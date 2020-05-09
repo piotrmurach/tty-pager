@@ -18,7 +18,7 @@ module TTY
 
         output.write(text)
       end
-      alias_method :<<, :write
+      alias << write
 
       # Pass output directly to stdout
       #

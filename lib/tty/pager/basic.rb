@@ -66,7 +66,7 @@ module TTY
         end
         self
       end
-      alias_method :<<, :write
+      alias << write
 
       # Write text to the pager, prompting on page end. Returns false if the
       # pager was closed.
