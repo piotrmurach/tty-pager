@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'forwardable'
 require 'tty-screen'
 
 require_relative 'pager/basic'
@@ -9,6 +10,8 @@ require_relative 'pager/version'
 
 module TTY
   class Pager
+    extend Forwardable
+
     Error = Class.new(StandardError)
     PagerClosed = Class.new(Error)
 
@@ -127,9 +130,7 @@ module TTY
     #   whether the pager exited successfully
     #
     # @api public
-    def close
-      pager.close
-    end
+    def_delegator :pager, :close
 
     # The terminal height
     #
