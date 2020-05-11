@@ -56,7 +56,41 @@ Then to perform actual content pagination invoke `page` method with the content 
 pager.page("Very long text...")
 ```
 
-If you want to use specific pager you can do so by invoking it directly:
+If, instead of a single string, you'd like to paginate a long-running operation, you could use the block form of the pager:
+
+```ruby
+TTY::Pager.page do |pager|
+  File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
+    # do some work with the line:
+    sleep 0.1
+
+    # send it to the pager:
+    pager.write(line)
+  end
+end
+```
+
+For more control, you could translate the block form into separate `write` and `close` calls:
+
+```ruby
+begin
+  pager = TTY::Pager.new
+
+  File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
+    # do some work with the line:
+    sleep 0.1
+
+    # send it to the pager:
+    pager.write(line)
+  end
+rescue TTY::Pager::PagerClosed
+  # the user closed the paginating tool
+ensure
+  pager.close
+end
+```
+
+If you want to use a specific pager you can do so by invoking it directly:
 
 ```ruby
 pager = TTY::Pager::BasicPager.new

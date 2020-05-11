@@ -37,4 +37,20 @@ RSpec.describe TTY::Pager, '.page' do
 
     expect(system_pager).to have_received(:page).with(text)
   end
+
+  describe "block form" do
+    it "calls .close when the block is done" do
+      system_pager = spy(:system_pager)
+      allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
+      allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
+
+      text = "I try all things, I achieve what I can.\n"
+      described_class.page do |pager|
+        pager.write(text)
+      end
+
+      expect(system_pager).to have_received(:write).with(text)
+      expect(system_pager).to have_received(:close)
+    end
+  end
 end
