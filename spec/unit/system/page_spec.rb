@@ -20,6 +20,20 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
     expect(write_io).to have_received(:close)
   end
 
+  it "streams individual line and raises PagerClosed error" do
+    system_pager = described_class.new
+    allow(system_pager).to receive(:pager_command).and_return("less")
+    allow(described_class).to receive(:run_command).and_return("")
+    command_io = spy(:command_io)
+    allow(IO).to receive(:popen).and_return(command_io)
+    allow(command_io).to receive(:public_send).and_raise(Errno::EPIPE)
+
+    expect {
+      system_pager << "I try all things, I achieve what I can."
+    }.to raise_error(TTY::Pager::PagerClosed,
+                     "The pager process (`less`) was closed")
+  end
+
   describe "block form" do
     it "calls .close when the block is done" do
       system_pager = spy(:system_pager)

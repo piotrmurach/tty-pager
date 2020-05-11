@@ -139,6 +139,18 @@ RSpec.describe TTY::Pager::BasicPager, '.page' do
     ].join("\n"))
   end
 
+  it "streams individual lines and quits raising PagerClosed error" do
+    pager = described_class.new(output: output, input: input,
+                                width: 100, height: 5)
+
+    input << "q\n"
+    input.rewind
+
+    expect {
+      3.times { pager.puts("I try all things, I achieve what I can.") }
+    }.to raise_error(TTY::Pager::PagerClosed, "The pager tool was closed")
+  end
+
   describe "block form" do
     it "calls .close when the block is done" do
       basic_pager = spy(:basic_pager)
