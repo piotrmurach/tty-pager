@@ -1,5 +1,14 @@
 # Change log
 
+## [v0.13.0] - 2020-x-x
+
+### Added
+* Add support for streaming by Andrew Radev(@AndrewRadev)
+
+### Changed
+* Change gemspec to add metadata, remove test artefacts and dev dependencies
+* Update strings dependency
+
 ## [v0.12.1] - 2019-03-16
 
 ### Fixed
@@ -106,6 +115,8 @@
 
 * Initial release
 
+[v0.13.0]: https://github.com/piotrmurach/tty-pager/compare/v0.12.1...v0.13.0
+[v0.12.1]: https://github.com/piotrmurach/tty-pager/compare/v0.12.0...v0.12.1
 [v0.12.0]: https://github.com/piotrmurach/tty-pager/compare/v0.11.0...v0.12.0
 [v0.11.0]: https://github.com/piotrmurach/tty-pager/compare/v0.10.0...v0.11.0
 [v0.10.0]: https://github.com/piotrmurach/tty-pager/compare/v0.9.0...v0.10.0
