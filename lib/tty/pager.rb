@@ -25,8 +25,7 @@ module TTY
       #
       # @api public
       def new(**options)
-        pager_klass = select_pager(**options)
-        @pager = pager_klass.new(**options)
+        select_pager(**options).new(**options)
       end
 
       # Paginate content through null, basic or system pager.
@@ -38,15 +37,7 @@ module TTY
       #
       # @api public
       def page(**options, &block)
-        @pager = new(**options)
-
-        begin
-          block.call(@pager)
-        rescue PagerClosed
-          # do nothing
-        ensure
-          @pager.close
-        end
+        select_pager(**options).page(**options, &block)
       end
 
       # Select an appriopriate pager
