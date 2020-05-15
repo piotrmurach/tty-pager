@@ -48,10 +48,14 @@ module TTY
       # if no system command is found, a BasicPager is used which
       # is a pure Ruby implementation known to work on any platform.
       #
+      # @param [Boolean] enabled
+      #   whether or not to allow paging
+      # @param [String] command
+      #   the command to run if available
+      #
       # @api private
-      def select_pager(**options)
-        enabled = options.fetch(:enabled) { true }
-        commands = Array(options[:command])
+      def select_pager(enabled: true, command: nil)
+        commands = Array(command)
 
         if !enabled
           NullPager

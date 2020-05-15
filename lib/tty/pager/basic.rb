@@ -18,17 +18,20 @@ module TTY
 
       # Create a basic pager
       #
-      # @option options [Integer] :height
+      # @param [Integer] :height
       #   the terminal height
-      # @option options [Integer] :width
+      # @param [Integer] :width
       #   the terminal width
+      # @param [Proc] :prompt
+      #   a proc object that accepts page number
       #
       # @api public
-      def initialize(**options)
-        super
-        @height  = options.fetch(:height) { TTY::Screen.height }
-        @width   = options.fetch(:width)  { TTY::Screen.width }
-        @prompt  = options.fetch(:prompt) { default_prompt }
+      def initialize(height: TTY::Screen.height, width: TTY::Screen.width,
+                     prompt: default_prompt, **options)
+        super(**options)
+        @height  = height
+        @width   = width
+        @prompt  = prompt
         prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
 

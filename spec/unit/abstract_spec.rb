@@ -18,7 +18,7 @@ RSpec.describe TTY::Pager::Abstract do
     allow(described_class).to receive(:new) { pager_instance }
 
     expect { |block|
-      described_class.page(command: "test", &block)
+      described_class.page(enabled: false, &block)
     }.to yield_with_args(pager_instance)
 
     expect(pager_instance).to have_received(:close)

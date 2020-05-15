@@ -93,17 +93,15 @@ module TTY
 
       # Create a system pager
       #
-      # @param [Hash] options
-      # @option options [String] :command
+      # @param [String] :command
       #   the command to use for paging
       #
       # @api public
-      def initialize(**options)
-        super
+      def initialize(command: nil, **options)
+        super(**options)
         @pager_io = nil
         @pager_command = nil
-        commands = Array(options[:command])
-        pager_command(*commands)
+        pager_command(*Array(command))
 
         if @pager_command.nil?
           raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \

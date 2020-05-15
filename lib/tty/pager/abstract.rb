@@ -22,21 +22,18 @@ module TTY
 
       # Create a pager
       #
-      # @param [Hash] options
-      # @option options [Proc] :prompt
-      #   a proc object that accepts page number
-      # @option options [IO] :input
+      # @param [IO] :input
       #   the object to send input to
-      # @option options [IO] :output
+      # @param [IO] :output
       #   the object to send output to
-      # @option options [Boolean] :enabled
+      # @param [Boolean] :enabled
       #   disable/enable text paging
       #
       # @api public
-      def initialize(**options)
-        @input   = options.fetch(:input)  { $stdin }
-        @output  = options.fetch(:output) { $stdout }
-        @enabled = options.fetch(:enabled) { true }
+      def initialize(input: $stdin, output: $stdout, enabled: true)
+        @input   = input
+        @output  = output
+        @enabled = enabled
       end
 
       # Check if pager is enabled
