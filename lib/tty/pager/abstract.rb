@@ -39,7 +39,7 @@ module TTY
       #   disable/enable text paging
       #
       # @api public
-      def initialize(input: $stdin, output: $stdout, enabled: true)
+      def initialize(input: $stdin, output: $stdout, enabled: true, **_options)
         @input   = input
         @output  = output
         @enabled = enabled

@@ -24,8 +24,9 @@ module TTY
       #   disable/enable text paging
       #
       # @api public
-      def new(**options)
-        select_pager(**options).new(**options)
+      def new(enabled: true, command: nil, **options)
+        select_pager(enabled: enabled, command: command).new(
+          enabled: enabled, command: command, **options)
       end
 
       # Paginate content through null, basic or system pager.
@@ -43,7 +44,7 @@ module TTY
       # @api public
       def page(text = nil, enabled: true, command: nil, **options, &block)
         select_pager(enabled: enabled, command: command).
-          page(text, command: command, **options, &block)
+          page(text, enabled: enabled, command: command, **options, &block)
       end
 
       # Select an appriopriate pager
