@@ -2,8 +2,8 @@
 
 RSpec.describe TTY::Pager::SystemPager, '.page' do
   it "executes the pager command in a subprocess" do
+    allow(described_class).to receive(:find_executable) { "less" }
     text     = "I try all things, I achieve what I can.\n"
-    allow(TTY::Pager::SystemPager).to receive(:exec_available?).and_return(true)
     output   = double(:output, :tty? => true)
     pager    = described_class.new(output: output)
     write_io = spy
@@ -21,9 +21,9 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
   end
 
   it "streams individual line and raises PagerClosed error" do
-    system_pager = described_class.new
-    allow(system_pager).to receive(:pager_command).and_return("less")
+    allow(described_class).to receive(:find_executable) { "less" }
     allow(described_class).to receive(:run_command).and_return("")
+    system_pager = described_class.new
     command_io = spy(:command_io)
     allow(IO).to receive(:popen).and_return(command_io)
     allow(command_io).to receive(:public_send).and_raise(Errno::EPIPE)
@@ -35,9 +35,9 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
   end
 
   it "pages content from a file path" do
+    allow(described_class).to receive(:find_executable) { "more" }
     system_pager = described_class.new
     allow(system_pager).to receive(:write)
-    allow(described_class).to receive(:exec_available?) { true }
     allow(described_class).to receive(:new) { system_pager }
     text = "I try all things, I achieve what I can.\n"
     allow(IO).to receive(:foreach).and_yield(text)

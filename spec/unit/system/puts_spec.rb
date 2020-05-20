@@ -2,7 +2,7 @@
 
 RSpec.describe TTY::Pager::SystemPager, '.puts' do
   it "triggers a start call exactly once" do
-    allow(TTY::Pager::SystemPager).to receive(:exec_available?).and_return(true)
+    allow(described_class).to receive(:find_executable) { "less" }
     output   = double(:output, :tty? => true)
     pager    = described_class.new(output: output)
     pager_io = double(:pager_io, puts: nil, close: true)
@@ -15,6 +15,7 @@ RSpec.describe TTY::Pager::SystemPager, '.puts' do
   end
 
   it "delegates any puts calls to the internal pager" do
+    allow(described_class).to receive(:find_executable) { "less" }
     pager = described_class.new
     pager_io = StringIO.new
 

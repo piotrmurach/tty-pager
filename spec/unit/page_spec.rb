@@ -56,9 +56,9 @@ RSpec.describe TTY::Pager, '.page' do
 
   context "path" do
     it "pages content from a file path" do
+      allow(TTY::Pager::SystemPager).to receive(:find_executable) { "less" }
       system_pager = TTY::Pager::SystemPager.new
       allow(system_pager).to receive(:write)
-      allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
       allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
       text = "I try all things, I achieve what I can.\n"
       allow(IO).to receive(:foreach).and_yield(text)
@@ -71,9 +71,9 @@ RSpec.describe TTY::Pager, '.page' do
 
   context "text" do
     it "pages content from a blob of text" do
+      allow(TTY::Pager::SystemPager).to receive(:find_executable) { "less" }
       system_pager = TTY::Pager::SystemPager.new
       allow(system_pager).to receive(:write)
-      allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
       allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
       text = "I try all things, I achieve what I can.\n"
 

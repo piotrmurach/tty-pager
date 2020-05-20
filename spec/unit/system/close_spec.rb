@@ -2,6 +2,7 @@
 
 RSpec.describe TTY::Pager::SystemPager, '.close' do
   it "succeeds if a pager hasn't been spawned" do
+    allow(described_class).to receive(:find_executable) { "less" }
     pager = described_class.new
 
     expect(pager).to receive(:spawn_pager).never
@@ -9,6 +10,7 @@ RSpec.describe TTY::Pager::SystemPager, '.close' do
   end
 
   it "succeeds if the pager exits successfully" do
+    allow(described_class).to receive(:find_executable) { "less" }
     pager = described_class.new
     pager_io = double("PagerIO", write: nil, close: true)
     expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
@@ -19,6 +21,7 @@ RSpec.describe TTY::Pager::SystemPager, '.close' do
   end
 
   it "fails if the pager exits with a failure" do
+    allow(described_class).to receive(:find_executable) { "less" }
     pager = described_class.new
     pager_io = double("PagerIO", write: nil, close: false)
     expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
