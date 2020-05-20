@@ -17,7 +17,26 @@ end
 
 require 'tty-pager'
 
+module TestHelpers
+  module Paths
+    def gem_root
+      ::File.dirname(__dir__)
+    end
+
+    def dir_path(*args)
+      path = ::File.join(gem_root, *args)
+      FileUtils.mkdir_p(path) unless ::File.exist?(path)
+      ::File.realpath(path)
+    end
+
+    def fixtures_path(*args)
+      ::File.expand_path(::File.join(dir_path("spec/fixtures"), *args))
+    end
+  end
+end
+
 RSpec.configure do |config|
+  config.include(TestHelpers::Paths)
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
