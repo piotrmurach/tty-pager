@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
-require 'tty-which'
+require "tty-which"
+
+require_relative "abstract"
 
 module TTY
-  class Pager
+  module Pager
     # A system pager is used  on systems where native
     # pagination exists
     #
     # @api public
-    class SystemPager < Pager
+    class SystemPager < Abstract
       # Check if command exists
       #
       # @example
@@ -91,17 +93,15 @@ module TTY
 
       # Create a system pager
       #
-      # @param [Hash] options
-      # @option options [String] :command
+      # @param [String] :command
       #   the command to use for paging
       #
       # @api public
-      def initialize(**options)
-        super
+      def initialize(command: nil, **options)
+        super(**options)
         @pager_io = nil
         @pager_command = nil
-        commands = Array(options[:command])
-        pager_command(*commands)
+        pager_command(*Array(command))
 
         if @pager_command.nil?
           raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
@@ -109,46 +109,6 @@ module TTY
                                    " executable. Install `less` like pager or" \
                                    " try using `BasicPager` instead." \
         end
-      end
-
-      # Use system command to page output text
-      #
-      # @example
-      #   page('some long text...')
-      #
-      # @param [String] text
-      #   the text to paginate
-      #
-      # @return [Boolean]
-      #   the success status of launching a process
-      #
-      # @api public
-      def page(text)
-        write(text)
-      rescue PagerClosed
-        # do nothing
-      ensure
-        close
-      end
-
-      # Spawn the pager process
-      #
-      # @return [PagerIO]
-      #   A wrapper for the external pager
-      #
-      # @api private
-      def spawn_pager
-        # In case there's a previous pager running:
-        close
-
-        command = pager_command
-        out = self.class.run_command(command)
-        # Issue running command, e.g. unsupported flag, fallback to just command
-        unless out.empty?
-          command = pager_command.split.first
-        end
-
-        PagerIO.new(command)
       end
 
       # Send text to the pager process. Starts a new process if it hasn't been
@@ -167,23 +127,6 @@ module TTY
         self
       end
       alias << write
-
-      # Send text to the pager process. Starts a new process if it hasn't been
-      # started yet.
-      #
-      # @param [Array<String>] *args
-      #   strings to send to the pager
-      #
-      # @return [Boolean]
-      #   the success status of writing to the pager process
-      #
-      # @api public
-      def try_write(*args)
-        write(*args)
-        true
-      rescue PagerClosed
-        false
-      end
 
       # Send a line of text, ending in a newline, to the pager process. Starts
       # a new process if it hasn't been started yet.
@@ -214,6 +157,8 @@ module TTY
         success
       end
 
+      private
+
       # The pager command to run
       #
       # @return [String]
@@ -226,6 +171,26 @@ module TTY
                          else
                            self.class.find_executable(*commands)
                          end
+      end
+
+      # Spawn the pager process
+      #
+      # @return [PagerIO]
+      #   A wrapper for the external pager
+      #
+      # @api private
+      def spawn_pager
+        # In case there's a previous pager running:
+        close
+
+        command = pager_command
+        out = self.class.run_command(command)
+        # Issue running command, e.g. unsupported flag, fallback to just command
+        unless out.empty?
+          command = pager_command.split.first
+        end
+
+        PagerIO.new(command)
       end
 
       # A wrapper for an external process.

@@ -1,31 +1,37 @@
 # frozen_string_literal: true
 
-require 'strings'
+require "strings"
+require "tty-screen"
+
+require_relative "abstract"
 
 module TTY
-  class Pager
+  module Pager
     # A basic pager is used to work on systems where
     # system pager is not supported.
     #
     # @api public
-    class BasicPager < Pager
+    class BasicPager < Abstract
       PAGE_BREAK = "\n--- Page -%s- " \
                     "Press enter/return to continue " \
                     "(or q to quit) ---"
 
       # Create a basic pager
       #
-      # @option options [Integer] :height
+      # @param [Integer] :height
       #   the terminal height
-      # @option options [Integer] :width
+      # @param [Integer] :width
       #   the terminal width
+      # @param [Proc] :prompt
+      #   a proc object that accepts page number
       #
       # @api public
-      def initialize(**options)
-        super
-        @height  = options.fetch(:height) { page_height }
-        @width   = options.fetch(:width)  { page_width }
-        @prompt  = options.fetch(:prompt) { default_prompt }
+      def initialize(height: TTY::Screen.height, width: TTY::Screen.width,
+                     prompt: default_prompt, **options)
+        super(**options)
+        @height  = height
+        @width   = width
+        @prompt  = prompt
         prompt_height = PAGE_BREAK.lines.to_a.size
         @height -= prompt_height
 
@@ -39,17 +45,6 @@ module TTY
       # @api private
       def default_prompt
         proc { |page_num| output.puts Strings.wrap(PAGE_BREAK % page_num, @width) }
-      end
-
-      # Page text
-      #
-      # @api public
-      def page(text)
-        write(text)
-      rescue PagerClosed
-        # do nothing
-      ensure
-        reset
       end
 
       # Write text to the pager, prompting on page end.
@@ -68,20 +63,6 @@ module TTY
       end
       alias << write
 
-      # Write text to the pager, prompting on page end. Returns false if the
-      # pager was closed.
-      #
-      # @return [Boolean]
-      #   the success status of writing to the screen
-      #
-      # @api public
-      def try_write(*args)
-        write(text)
-        true
-      rescue PagerClosed
-        false
-      end
-
       # Print a line of text to the pager, prompting on page end.
       #
       # @raise [PagerClosed]
@@ -90,6 +71,25 @@ module TTY
       # @api public
       def puts(text)
         send_text(:puts, text)
+      end
+
+      # Stop the pager, wait for it to clean up
+      #
+      # @api public
+      def close
+        reset
+        true
+      end
+
+      private
+
+      # Reset internal state
+      #
+      # @api private
+      def reset
+        @page_num = 1
+        @leftover = []
+        @lines_left = @height
       end
 
       # The lower-level common implementation of printing methods
@@ -132,22 +132,6 @@ module TTY
         if @leftover.size > 0
           output.public_send(write_method, @leftover.join)
         end
-      end
-
-      # Stop the pager, wait for it to clean up
-      #
-      # @api public
-      def close
-        reset
-        true
-      end
-
-      private
-
-      def reset
-        @page_num = 1
-        @leftover = []
-        @lines_left = @height
       end
 
       # @api private

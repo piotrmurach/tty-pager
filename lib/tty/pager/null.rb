@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-module TTY
-  class Pager
-    class NullPager < Pager
-      # Pass output directly to stdout
-      #
-      # @api public
-      def page(text)
-        write(text)
-      end
+require_relative "abstract"
 
+module TTY
+  module Pager
+    class NullPager < Abstract
       # Pass output directly to stdout
       #
       # @api public
