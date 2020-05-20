@@ -34,6 +34,20 @@ RSpec.describe TTY::Pager::SystemPager, '.page' do
                      "The pager process (`less`) was closed")
   end
 
+  it "pages content from a file path" do
+    system_pager = described_class.new
+    allow(system_pager).to receive(:write)
+    allow(described_class).to receive(:exec_available?) { true }
+    allow(described_class).to receive(:new) { system_pager }
+    text = "I try all things, I achieve what I can.\n"
+    allow(IO).to receive(:foreach).and_yield(text)
+
+    instance = described_class.new
+    instance.page(path: "/some/file/path.txt")
+
+    expect(system_pager).to have_received(:write).with(text)
+  end
+
   describe "block form" do
     it "calls .close when the block is done" do
       system_pager = spy(:system_pager)

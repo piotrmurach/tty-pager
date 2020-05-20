@@ -35,9 +35,15 @@ module TTY
       #     pager.write "some text"
       #   end
       #
+      # @param [String] text
+      #   an optional blob of content
+      # @param [String] path
+      #   a path to a file
+      #
       # @api public
-      def page(**options, &block)
-        select_pager(**options).page(**options, &block)
+      def page(text = nil, enabled: true, command: nil, **options, &block)
+        select_pager(enabled: enabled, command: command).
+          page(text, command: command, **options, &block)
       end
 
       # Select an appriopriate pager

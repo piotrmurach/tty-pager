@@ -38,7 +38,7 @@ RSpec.describe TTY::Pager, '.page' do
     expect(system_pager).to have_received(:page).with(text)
   end
 
-  describe "block form" do
+  context "block" do
     it "calls .close when the block is done" do
       system_pager = spy(:system_pager)
       allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
@@ -51,6 +51,35 @@ RSpec.describe TTY::Pager, '.page' do
 
       expect(system_pager).to have_received(:write).with(text)
       expect(system_pager).to have_received(:close)
+    end
+  end
+
+  context "path" do
+    it "pages content from a file path" do
+      system_pager = TTY::Pager::SystemPager.new
+      allow(system_pager).to receive(:write)
+      allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
+      allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
+      text = "I try all things, I achieve what I can.\n"
+      allow(IO).to receive(:foreach).and_yield(text)
+
+      described_class.page(path: "/path/to/filename.txt")
+
+      expect(system_pager).to have_received(:write).with(text)
+    end
+  end
+
+  context "text" do
+    it "pages content from a blob of text" do
+      system_pager = TTY::Pager::SystemPager.new
+      allow(system_pager).to receive(:write)
+      allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
+      allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
+      text = "I try all things, I achieve what I can.\n"
+
+      described_class.page(text)
+
+      expect(system_pager).to have_received(:write).with(text)
     end
   end
 end

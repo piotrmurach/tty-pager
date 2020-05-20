@@ -7,12 +7,21 @@ module TTY
 
       # Paginate content through null, basic or system pager.
       #
+      # @param [String] text
+      #   an optional blob of content
+      # @param [String] path
+      #   a path to a file
+      #
       # @api public
-      def self.page(**options, &block)
+      def self.page(text = nil, path: nil, **options, &block)
         instance = new(**options)
 
         begin
-          block.call(instance)
+          if block_given?
+            block.call(instance)
+          else
+            instance.page(text, path: path)
+          end
         rescue PagerClosed
           # do nothing
         ensure
@@ -54,8 +63,14 @@ module TTY
       #   the text to paginate
       #
       # @api public
-      def page(text)
-        write(text)
+      def page(text = nil, path: nil)
+        if path
+          IO.foreach(path) do |line|
+            write(line)
+          end
+        else
+          write(text)
+        end
       rescue PagerClosed
         # do nothing
       ensure
