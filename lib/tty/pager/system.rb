@@ -14,7 +14,7 @@ module TTY
       # Check if command exists
       #
       # @example
-      #   command_exists?('less) # => true
+      #   command_exists?("less") # => true
       #
       # @param [String] command
       #   the command to check
@@ -33,8 +33,8 @@ module TTY
       #
       # @api private
       def self.run_command(*args)
-        require 'tempfile'
-        out = Tempfile.new('tty-pager')
+        require "tempfile"
+        out = Tempfile.new("tty-pager")
         result = system(*args, out: out.path, err: out.path, in: ::File::NULL)
         return if result.nil?
         out.rewind
@@ -50,18 +50,18 @@ module TTY
       #
       # @api private
       def self.executables
-        [ENV['GIT_PAGER'], ENV['PAGER'],
-         command_exists?('git') ? `git config --get-all core.pager` : nil,
-         'less -r', 'more -r', 'most', 'cat', 'pager', 'pg'].compact
+        [ENV["GIT_PAGER"], ENV["PAGER"],
+         command_exists?("git") ? `git config --get-all core.pager` : nil,
+         "less -r", "more -r", "most", "cat", "pager", "pg"].compact
       end
 
       # Find first available termainal pager program executable
       #
       # @example Basic usage
-      #   find_executable # => 'less'
+      #   find_executable # => "less"
       #
       # @example Usage with commands
-      #   find_executable('less', 'cat')  # => 'less'
+      #   find_executable("less", "cat")  # => "less"
       #
       # @param [Array[String]] commands
       #
@@ -82,7 +82,7 @@ module TTY
       #   available?  # => true
       #
       # @example Usage with command
-      #   available?('less') # => true
+      #   available?("less") # => true
       #
       # @return [Boolean]
       #
@@ -199,7 +199,7 @@ module TTY
       class PagerIO
         def initialize(command)
           @command = command
-          @io      = IO.popen(@command, 'w')
+          @io      = IO.popen(@command, "w")
           @pid     = @io.pid
         end
 

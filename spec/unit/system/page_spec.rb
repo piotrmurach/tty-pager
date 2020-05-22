@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::SystemPager, '.page' do
+RSpec.describe TTY::Pager::SystemPager, ".page" do
   it "executes the pager command in a subprocess" do
     allow(described_class).to receive(:find_executable) { "less" }
     text     = "I try all things, I achieve what I can.\n"

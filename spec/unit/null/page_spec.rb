@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::NullPager, '.page' do
+RSpec.describe TTY::Pager::NullPager, ".page" do
   let(:output)   { StringIO.new }
 
   it "prints content to stdout when tty device" do
@@ -18,7 +18,7 @@ RSpec.describe TTY::Pager::NullPager, '.page' do
     text = "I try all things, I achieve what I can.\n"
 
     expect(pager.page(text)).to eq(text)
-    expect(output.string).to eq('')
+    expect(output.string).to eq("")
   end
 
   it "doesn't write a newline if one wasn't given" do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::SystemPager, '.write' do
+RSpec.describe TTY::Pager::SystemPager, ".write" do
   it "triggers a `spawn_pager` call exactly once" do
     allow(described_class).to receive(:find_executable) { "less" }
     output   = double(:output, :tty? => true)

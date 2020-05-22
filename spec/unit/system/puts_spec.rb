@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::SystemPager, '.puts' do
+RSpec.describe TTY::Pager::SystemPager, ".puts" do
   it "triggers a start call exactly once" do
     allow(described_class).to receive(:find_executable) { "less" }
     output   = double(:output, :tty? => true)

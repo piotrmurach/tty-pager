@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::BasicPager, '.page' do
+RSpec.describe TTY::Pager::BasicPager, ".page" do
   let(:input)  { StringIO.new }
   let(:output) { StringIO.new }
 

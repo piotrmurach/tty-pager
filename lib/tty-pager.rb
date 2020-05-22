@@ -1,1 +1,1 @@
-require_relative 'tty/pager'
+require_relative "tty/pager"

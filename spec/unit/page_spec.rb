@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager, '.page' do
+RSpec.describe TTY::Pager, ".page" do
   let(:output) { StringIO.new }
 
   it "selects null pager when disabled" do

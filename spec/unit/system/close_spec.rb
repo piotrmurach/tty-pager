@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::SystemPager, '.close' do
+RSpec.describe TTY::Pager::SystemPager, ".close" do
   it "succeeds if a pager hasn't been spawned" do
     allow(described_class).to receive(:find_executable) { "less" }
     pager = described_class.new
