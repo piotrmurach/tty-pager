@@ -24,6 +24,16 @@ RSpec.describe TTY::Pager::Abstract do
     expect(pager_instance).to have_received(:close)
   end
 
+  it "automatically closes pager when PagerClosed error is raised" do
+    pager_instance = spy(:pager)
+    allow(pager_instance).to receive(:page).and_raise(TTY::Pager::PagerClosed)
+    allow(described_class).to receive(:new) { pager_instance }
+
+    described_class.page("text", enabled: false)
+
+    expect(pager_instance).to have_received(:close)
+  end
+
   it "exposes instance-level `page` implementation" do
     pager = described_class.new
     allow(pager).to receive(:write)
