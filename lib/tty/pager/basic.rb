@@ -12,9 +12,15 @@ module TTY
     #
     # @api public
     class BasicPager < Abstract
-      PAGE_BREAK = "\n--- Page -%s- " \
-                    "Press enter/return to continue " \
+      PAGE_BREAK = "\n--- Page -%<page>s- Press enter/return to continue " \
                     "(or q to quit) ---"
+
+      # Default prompt for paging
+      #
+      # @return [Proc]
+      #
+      # @api private
+      DEFAULT_PROMPT = ->(page) { format(PAGE_BREAK, page: page) }
 
       # Create a basic pager
       #
@@ -27,7 +33,7 @@ module TTY
       #
       # @api public
       def initialize(height: TTY::Screen.height, width: TTY::Screen.width,
-                     prompt: default_prompt, **options)
+                     prompt: DEFAULT_PROMPT, **options)
         super(**options)
         @height  = height
         @width   = width
@@ -36,15 +42,6 @@ module TTY
         @height -= prompt_height
 
         reset
-      end
-
-      # Default prompt for paging
-      #
-      # @return [Proc]
-      #
-      # @api private
-      def default_prompt
-        proc { |page_num| output.puts Strings.wrap(PAGE_BREAK % page_num, @width) }
       end
 
       # Write text to the pager, prompting on page end.
@@ -136,9 +133,16 @@ module TTY
         end
       end
 
+      # Check if paging should be continued
+      #
+      # @param [Integer] page
+      #   the page number
+      #
+      # @return [Boolean]
+      #
       # @api private
-      def continue_paging?(page_num)
-        @prompt.call(page_num)
+      def continue_paging?(page)
+        output.puts(Strings.wrap(@prompt.call(page), @width))
         !@input.gets.chomp[/q/i]
       end
     end # BasicPager

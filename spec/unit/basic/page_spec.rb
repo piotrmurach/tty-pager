@@ -142,7 +142,7 @@ RSpec.describe TTY::Pager::BasicPager, "#page" do
     5.times { text << "I try all things, I achieve what I can.\n"}
     input << "\nq\n"
     input.rewind
-    prompt = proc { |num| output.puts "Page -#{num}-" }
+    prompt = ->(page) { "Page -#{page}-" }
     pager = described_class.new(output: output, input: input,
                                 width: 100, height: 5, prompt: prompt)
     pager.page(text.join)
