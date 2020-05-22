@@ -101,12 +101,13 @@ module TTY
       def send_text(write_method, text)
         text.lines.each do |line|
           chunk = []
+
           if !@leftover.empty?
-            chunk = @leftover
-            @leftover = []
+            chunk.concat(@leftover)
+            @leftover.clear
           end
-          wrapped_line = Strings.wrap(line, @width)
-          wrapped_line.lines.each do |line_part|
+
+          Strings.wrap(line, @width).lines.each do |line_part|
             if @lines_left > 0
               chunk << line_part
               @lines_left -= 1
@@ -114,22 +115,23 @@ module TTY
               @leftover << line_part
             end
           end
+
           output.public_send(write_method, chunk.join)
 
-          if @lines_left == 0
-            unless continue_paging?(@page_num)
-              raise PagerClosed.new("The pager tool was closed")
-            end
+          next unless @lines_left.zero?
 
-            @lines_left = @height
-            if @leftover.size > 0
-              @lines_left -= @leftover.size
-            end
-            @page_num += 1
+          unless continue_paging?(@page_num)
+            raise PagerClosed.new("The pager tool was closed")
           end
+
+          @lines_left = @height
+          if @leftover.size > 0
+            @lines_left -= @leftover.size
+          end
+          @page_num += 1
         end
 
-        if @leftover.size > 0
+        if !@leftover.empty?
           output.public_send(write_method, @leftover.join)
         end
       end

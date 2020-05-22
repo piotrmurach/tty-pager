@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TTY::Pager::BasicPager, ".page" do
+RSpec.describe TTY::Pager::BasicPager, "#page" do
   let(:input)  { StringIO.new }
   let(:output) { StringIO.new }
 
@@ -17,7 +17,51 @@ RSpec.describe TTY::Pager::BasicPager, ".page" do
     expect(output.string).to eq(text)
   end
 
-  it "breaks text exceeding terminal width" do
+  it "pages a long text without newlines exceeding terminal page size" do
+    text = "The more so, I say, because truly to enjoy bodily warmth, " \
+           "some small part of you must be cold, for there is no quality " \
+           "in this world that is not what it is merely by contrast.\n" \
+           "Nothing exists in itself.\n"
+    input << "\n\n"
+    input.rewind
+    pager = described_class.new(output: output, input: input,
+                                width: 40, height: 5)
+    pager.page(text)
+    expect(output.string).to eq([
+      "The more so, I say, because truly to ",
+      "enjoy bodily warmth, some small part of ",
+      "you must be cold, for there is no ",
+      "",
+      "--- Page -1- Press enter/return to ",
+      "continue (or q to quit) ---",
+      "quality in this world that is not what ",
+      "it is merely by contrast.",
+      "Nothing exists in itself.",
+      "",
+      "--- Page -2- Press enter/return to ",
+      "continue (or q to quit) ---\n",
+    ].join("\n"))
+  end
+
+  it "pages text with number of lines that match the terminal page height" do
+    text = "one\ntwo\nthree\nfour\nfive"
+    input << "\n"
+    input.rewind
+    pager = described_class.new(output: output, input: input,
+                                width: 80, height: 5)
+    pager.page(text)
+    expect(output.string).to eq([
+      "one",
+      "two",
+      "three",
+      "",
+      "--- Page -1- Press enter/return to continue (or q to quit) ---",
+      "four",
+      "five"
+    ].join("\n"))
+  end
+
+  it "breaks down text and prompt exceeding terminal width" do
     text = "It is not down on any map; true places never are.\n"
     input << "\n"
     input.rewind
