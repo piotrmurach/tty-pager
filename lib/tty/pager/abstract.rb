@@ -14,6 +14,8 @@ module TTY
       #
       # @api public
       def self.page(text = nil, path: nil, **options, &block)
+        validate_arguments(text, path, block)
+
         instance = new(**options)
 
         begin
@@ -28,6 +30,23 @@ module TTY
           instance.close
         end
       end
+
+      # Disallow mixing input arguments
+      #
+      # @raise [IvalidArgument]
+      #
+      # @api private
+      def self.validate_arguments(text, path, block)
+        message = if !text.nil? && !block.nil?
+                    "Cannot give text argument and block at the same time."
+                  elsif !text.nil? && !path.nil?
+                    "Cannot give text and :path arguments at the same time."
+                  elsif !path.nil? && !block.nil?
+                    "Cannot give :path argument and block at the same time."
+                  end
+        raise(InvalidArgument, message) if message
+      end
+      private_class_method :validate_arguments
 
       # Create a pager
       #
@@ -97,15 +116,15 @@ module TTY
         false
       end
 
-      def write(*args)
+      def write(*)
         raise UndefinedMethodError
       end
 
-      def puts(*args)
+      def puts(*)
         raise UndefinedMethodError
       end
 
-      def close(*args)
+      def close(*)
         raise UndefinedMethodError
       end
 
@@ -114,7 +133,6 @@ module TTY
       attr_reader :output
 
       attr_reader :input
-
     end # Abstract
   end # Pager
 end # TTY

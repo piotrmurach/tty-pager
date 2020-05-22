@@ -52,6 +52,24 @@ RSpec.describe TTY::Pager, '.page' do
       expect(system_pager).to have_received(:write).with(text)
       expect(system_pager).to have_received(:close)
     end
+
+    it "doesn't allow text argument and block together" do
+      expect {
+        described_class.page("argument text") do |pager|
+          pager.write("block text")
+        end
+      }.to raise_error(TTY::Pager::InvalidArgument,
+                       "Cannot give text argument and block at the same time.")
+    end
+
+    it "doesn't allow :path argument and block together" do
+      expect {
+        described_class.page(path: "/path/to/text") do |pager|
+          pager.write("block text")
+        end
+      }.to raise_error(TTY::Pager::InvalidArgument,
+                       "Cannot give :path argument and block at the same time.")
+    end
   end
 
   context "path" do
@@ -66,6 +84,13 @@ RSpec.describe TTY::Pager, '.page' do
       described_class.page(path: "/path/to/filename.txt")
 
       expect(system_pager).to have_received(:write).with(text)
+    end
+
+    it "doesn't allow text argument and :path together" do
+      expect {
+        described_class.page("argument text", path: "/path/to/text")
+      }.to raise_error(TTY::Pager::InvalidArgument,
+                       "Cannot give text and :path arguments at the same time.")
     end
   end
 

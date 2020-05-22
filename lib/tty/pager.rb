@@ -8,20 +8,30 @@ require_relative "pager/version"
 module TTY
   module Pager
     Error = Class.new(StandardError)
+
+    # Raised when pager is closed
     PagerClosed = Class.new(Error)
+
+    # Raised when user provides unnexpected argument
+    InvalidArgument = Class.new(Error)
 
     module ClassMethods
       # Create a pager
       #
-      # @param [Hash] options
-      # @option options [Proc] :prompt
-      #   a proc object that accepts page number
-      # @option options [IO] :input
-      #   the object to send input to
-      # @option options [IO] :output
-      #   the object to send output to
-      # @option options [Boolean] :enabled
+      # @param [Boolean] :enabled
       #   disable/enable text paging
+      # @param [String] :command
+      #   the paging command
+      # @param [IO] :input
+      #   the object to send input to
+      # @param [IO] :output
+      #   the object to send output to
+      # @param [Proc] :prompt
+      #   a proc object that accepts page number
+      # @param [Integer] :width
+      #   the terminal width
+      # @param [Integer] :height
+      #   the terminal height
       #
       # @api public
       def new(enabled: true, command: nil, **options)
@@ -36,15 +46,25 @@ module TTY
       #     pager.write "some text"
       #   end
       #
-      # @param [String] text
+      # @param [String] :text
       #   an optional blob of content
-      # @param [String] path
+      # @param [String] :path
       #   a path to a file
+      # @param [Boolean] :enabled
+      #   whether or not to use null pager
+      # @param [String] :command
+      #   the paging command
+      # @param [IO] :input
+      #   the object to send input to
+      # @param [IO] :output
+      #   the object to send output to
       #
       # @api public
-      def page(text = nil, enabled: true, command: nil, **options, &block)
+      def page(text = nil, path: nil, enabled: true, command: nil,
+               **options, &block)
         select_pager(enabled: enabled, command: command).
-          page(text, enabled: enabled, command: command, **options, &block)
+          page(text, path: path, enabled: enabled, command: command,
+               **options, &block)
       end
 
       # Select an appriopriate pager
