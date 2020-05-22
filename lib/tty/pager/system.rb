@@ -103,11 +103,11 @@ module TTY
         @pager_command = nil
         pager_command(*Array(command))
 
-        if @pager_command.nil?
-          raise TTY::Pager::Error, "#{self.class.name} cannot be used on your" \
-                                   " system due to lack of appropriate pager" \
-                                   " executable. Install `less` like pager or" \
-                                   " try using `BasicPager` instead." \
+        if pager_command.nil?
+          raise TTY::Pager::Error,
+                "#{self.class.name} cannot be used on your system due to " \
+                "lack of appropriate pager executable. Install `less` like " \
+                "pager or try using `BasicPager` instead."
         end
       end
 
@@ -152,6 +152,7 @@ module TTY
       # @api public
       def close
         return true unless @pager_io
+
         success = @pager_io.close
         @pager_io = nil
         success
@@ -166,11 +167,11 @@ module TTY
       #
       # @api private
       def pager_command(*commands)
-        @pager_command = if @pager_command && commands.empty?
-                           @pager_command
-                         else
-                           self.class.find_executable(*commands)
-                         end
+        if @pager_command && commands.empty?
+          @pager_command
+        else
+          @pager_command = self.class.find_executable(*commands)
+        end
       end
 
       # Spawn the pager process
@@ -213,6 +214,7 @@ module TTY
 
         def close
           return true if @io.closed?
+
           @io.close
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
           status.success?

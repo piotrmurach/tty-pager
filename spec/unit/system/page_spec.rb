@@ -20,6 +20,21 @@ RSpec.describe TTY::Pager::SystemPager, ".page" do
     expect(write_io).to have_received(:close)
   end
 
+  it "strips command from unsupported flags" do
+    text = "I try all things, I achieve what I can.\n"
+    exec = "less --unknown"
+    allow(described_class).to receive(:find_executable) { exec }
+    allow(described_class).to receive(:run_command).with(exec) {
+      "There is no unknown option (\"less --help\" for help)" }
+    system_pager = described_class.new(command: exec)
+    write_io = spy(:write_io)
+    allow(IO).to receive(:popen).and_return(write_io)
+
+    system_pager.page(text)
+
+    expect(IO).to have_received(:popen).with("less", "w")
+  end
+
   it "streams individual line and raises PagerClosed error" do
     allow(described_class).to receive(:find_executable) { "less" }
     allow(described_class).to receive(:run_command).and_return("")
