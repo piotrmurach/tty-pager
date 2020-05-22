@@ -48,8 +48,9 @@ RSpec.describe TTY::Pager::SystemPager, "#puts" do
   it "raises no child process error" do
     allow(described_class).to receive(:find_executable) { "less" }
     allow(described_class).to receive(:run_command).with("less") { "" }
-    pager_io = spy(:pager_io, :closed? => false)
+    pager_io = spy(:pager_io, :closed? => false, pid: 999)
     allow(IO).to receive(:popen).and_return(pager_io)
+    allow(Process).to receive(:waitpid2).and_raise(Errno::ECHILD)
 
     pager = described_class.new
 
