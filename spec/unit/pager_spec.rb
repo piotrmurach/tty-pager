@@ -25,7 +25,7 @@ module TTY
 
       it "selects BasicPager when no command available" do
         allow(TTY::Pager::SystemPager).to receive(:find_executable) { nil }
-        prompt = -> { }
+        prompt = ->(page) { "Page #{page}\non multiline\n" }
 
         pager = described_class.new(width: 80, height: 30, prompt: prompt)
 

@@ -30,16 +30,13 @@ RSpec.describe TTY::Pager::BasicPager, "#page" do
     expect(output.string).to eq([
       "The more so, I say, because truly to ",
       "enjoy bodily warmth, some small part of ",
-      "you must be cold, for there is no ",
       "",
       "--- Page -1- Press enter/return to ",
       "continue (or q to quit) ---",
+      "you must be cold, for there is no ",
       "quality in this world that is not what ",
       "it is merely by contrast.",
-      "Nothing exists in itself.",
-      "",
-      "--- Page -2- Press enter/return to ",
-      "continue (or q to quit) ---\n",
+      "Nothing exists in itself.\n"
     ].join("\n"))
   end
 
@@ -73,15 +70,6 @@ RSpec.describe TTY::Pager::BasicPager, "#page" do
       "down on ",
       "any map; ",
       "true ",
-      "",
-      "--- Page ",
-      "-1- Press ",
-      "e",
-      "nter/retur",
-      "n to ",
-      "continue ",
-      "(or q to ",
-      "quit) ---",
       "places ",
       "never are.\n"
     ].join("\n"))
@@ -150,8 +138,8 @@ RSpec.describe TTY::Pager::BasicPager, "#page" do
       "I try all things, I achieve what I can.",
       "I try all things, I achieve what I can.",
       "I try all things, I achieve what I can.",
-      "Page -1-",
       "I try all things, I achieve what I can.",
+      "Page -1-",
       "I try all things, I achieve what I can.\n",
     ].join("\n"))
   end

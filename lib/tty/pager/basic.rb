@@ -38,7 +38,7 @@ module TTY
         @height  = height
         @width   = width
         @prompt  = prompt
-        prompt_height = PAGE_BREAK.lines.to_a.size
+        prompt_height = Strings.wrap(prompt.call(100).to_s, width).lines.count
         @height -= prompt_height
 
         reset
@@ -143,7 +143,7 @@ module TTY
       # @api private
       def continue_paging?(page)
         output.puts(Strings.wrap(@prompt.call(page), @width))
-        !@input.gets.chomp[/q/i]
+        !@input.getc.chomp[/q/i]
       end
     end # BasicPager
   end # Pager
