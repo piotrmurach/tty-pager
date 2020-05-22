@@ -1,11 +1,12 @@
 # Change log
 
-## [v0.13.0] - 2020-x-x
+## [v0.13.0] - 2020-05-x
 
 ### Added
 * Add support for streaming by Andrew Radev(@AndrewRadev)
 
 ### Changed
+* Change Pager structure and extract TTY::Pager::Abstract for the null, basic and system pagers
 * Change gemspec to add metadata, remove test artefacts and dev dependencies
 * Update strings dependency
 
