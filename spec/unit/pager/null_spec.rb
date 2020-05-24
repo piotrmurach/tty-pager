@@ -3,7 +3,7 @@
 RSpec.describe TTY::Pager::NullPager do
   let(:output)   { StringIO.new }
 
-  context "page" do
+  describe "#page" do
     it "prints content to stdout when tty device" do
       allow(output).to receive(:tty?).and_return(true)
       pager = described_class.new(output: output)
@@ -33,7 +33,7 @@ RSpec.describe TTY::Pager::NullPager do
     end
   end
 
-  context "puts" do
+  describe "#puts" do
     it "writes content to terminal with a newline" do
       allow(output).to receive(:tty?).and_return(true)
       text = "I try all things, I achieve what I can."
