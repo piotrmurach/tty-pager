@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe TTY::Pager::Abstract do
-  it "configures instance to be enabled by default" do
+  it "is enabled by default, can be disabled" do
     pager = described_class.new
-
     expect(pager.enabled?).to eq(true)
-  end
 
-  it "configures instance to be enabled" do
     pager = described_class.new(enabled: false)
-
     expect(pager.enabled?).to eq(false)
   end
 
