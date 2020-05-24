@@ -2,8 +2,11 @@
 
 RSpec.describe TTY::Pager::SystemPager do
   describe ".close" do
-    it "succeeds if a pager hasn't been spawned" do
+    before :each do
       allow(described_class).to receive(:find_executable) { "less" }
+    end
+
+    it "succeeds if a pager hasn't been spawned" do
       pager = described_class.new
 
       expect(pager).to receive(:spawn_pager).never
@@ -11,7 +14,6 @@ RSpec.describe TTY::Pager::SystemPager do
     end
 
     it "succeeds if the pager exits successfully" do
-      allow(described_class).to receive(:find_executable) { "less" }
       pager = described_class.new
       pager_io = double("PagerIO", write: nil, close: true)
       expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
@@ -22,7 +24,6 @@ RSpec.describe TTY::Pager::SystemPager do
     end
 
     it "fails if the pager exits with a failure" do
-      allow(described_class).to receive(:find_executable) { "less" }
       pager = described_class.new
       pager_io = double("PagerIO", write: nil, close: false)
       expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
@@ -58,7 +59,7 @@ RSpec.describe TTY::Pager::SystemPager do
   end
 
   describe "#find_executable" do
-    let(:execs)   { ["less", "more"] }
+    let(:execs) { ["less", "more"] }
 
     subject(:pager) { described_class }
 
@@ -189,7 +190,7 @@ RSpec.describe TTY::Pager::SystemPager do
       expect(system_pager).to have_received(:write).with(text)
     end
 
-    describe "block form" do
+    context "block form" do
       it "calls .close when the block is done" do
         system_pager = spy(:system_pager)
         allow(described_class).to receive(:exec_available?) { true }
@@ -206,36 +207,38 @@ RSpec.describe TTY::Pager::SystemPager do
     end
   end
 
-  describe "#puts" do
-    it "spawns an internal pager exactly once" do
+  context "writing" do
+    before :each do
       allow(described_class).to receive(:find_executable) { "less" }
+    end
+
+    it "spawns an internal pager exactly once" do
       pager    = described_class.new
       pager_io = spy(:pager_io)
       allow(pager).to receive(:spawn_pager).and_return(pager_io)
 
       pager.puts("one")
-      pager.puts("two")
-      pager.puts("three")
+      pager.write("two")
+      pager.try_write("three")
 
       expect(pager).to have_received(:spawn_pager).once
     end
 
-    it "delegates any puts calls to the internal pager" do
-      allow(described_class).to receive(:find_executable) { "less" }
+    it "delegates any writing calls to the internal pager" do
       pager = described_class.new
       pager_io = StringIO.new
 
       allow(pager).to receive(:spawn_pager).once.and_return(pager_io)
 
       pager.puts("one")
-      pager.puts("two")
+      pager.write("two ")
+      pager.try_write("three\n")
       pager.close
 
-      expect(pager_io.string).to eq("one\ntwo\n")
+      expect(pager_io.string).to eq("one\ntwo three\n")
     end
 
-    it "invokes puts calls on the internal pager" do
-      allow(described_class).to receive(:find_executable) { "less" }
+    it "invokes IO calls on the internal pager" do
       allow(described_class).to receive(:run_command).with("less") { "" }
       pager_io = spy(:pager_io, :closed? => false)
       allow(IO).to receive(:popen).and_return(pager_io)
@@ -244,10 +247,14 @@ RSpec.describe TTY::Pager::SystemPager do
 
       pager = described_class.new
       pager.puts("one")
-      pager.puts("two")
+      pager.write("two")
+      pager.try_write("three")
       pager.close
 
-      expect(pager_io).to have_received(:puts).with("one").once.with("two").once
+      expect(pager_io).to have_received(:puts).with("one").once
+      expect(pager_io).to have_received(:write).
+        with("two").once.
+        with("three").once
       expect(pager_io).to have_received(:close).once
     end
 
@@ -260,12 +267,13 @@ RSpec.describe TTY::Pager::SystemPager do
 
       pager = described_class.new
 
-      pager.write("one")
+      pager.puts("one")
+      pager.write("two")
+      pager.try_write("three")
 
       expect(pager.close).to eq(true)
     end
   end
-
 
   describe "#try_write" do
     it "writes content and returns true" do
@@ -276,7 +284,7 @@ RSpec.describe TTY::Pager::SystemPager do
       expect(pager.try_write("one")).to eq(true)
     end
 
-    it "raises PagerClosed error when writing and returns false" do
+    it "catches a PagerClosed error when writing and returns false" do
       allow(described_class).to receive(:find_executable) { "less" }
       pager = described_class.new
       allow(pager).to receive(:write).and_raise(TTY::Pager::PagerClosed)
@@ -286,49 +294,6 @@ RSpec.describe TTY::Pager::SystemPager do
   end
 
   describe "#write" do
-    it "spawns an internal pager exactly once" do
-      allow(described_class).to receive(:find_executable) { "less" }
-      pager    = described_class.new
-      pager_io = spy(:pager_io)
-      allow(pager).to receive(:spawn_pager).and_return(pager_io)
-
-      pager.write("one")
-      pager.write("two")
-      pager.write("three")
-
-      expect(pager).to have_received(:spawn_pager).once
-    end
-
-    it "delegates any write calls to the internal pager" do
-      allow(described_class).to receive(:find_executable) { "less" }
-      pager = described_class.new
-      pager_io = StringIO.new
-
-      expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
-
-      pager.write("one")
-      pager.write("two")
-
-      expect(pager_io.string).to eq("onetwo")
-    end
-
-    it "invokes write calls directly on the internal pager" do
-      allow(described_class).to receive(:find_executable) { "less" }
-      allow(described_class).to receive(:run_command).with("less") { "" }
-      pager_io = spy(:pager_io, :closed? => false)
-      allow(IO).to receive(:popen).and_return(pager_io)
-      result = [nil, spy(:result)]
-      allow(Process).to receive(:waitpid2).and_return(result)
-
-      pager = described_class.new
-      pager.write("one")
-      pager.write("two")
-      pager.close
-
-      expect(pager_io).to have_received(:write).with("one").once.with("two").once
-      expect(pager_io).to have_received(:close).once
-    end
-
     it "is aliased to <<" do
       allow(described_class).to receive(:find_executable) { "less" }
       pager = described_class.new
@@ -336,9 +301,9 @@ RSpec.describe TTY::Pager::SystemPager do
 
       expect(pager).to receive(:spawn_pager).once.and_return(pager_io)
 
-      pager << "one"
+      pager << "one" << "two"
 
-      expect(pager_io).to have_received(:write)
+      expect(pager_io).to have_received(:write).twice
     end
   end
 end

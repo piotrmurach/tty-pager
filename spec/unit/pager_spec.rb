@@ -39,53 +39,35 @@ module TTY
     describe ".page" do
       let(:output) { StringIO.new }
 
-      it "selects null pager when disabled" do
-        null_pager = spy(:null_pager)
-        allow(TTY::Pager::NullPager).to receive(:new) { null_pager }
+      it "instantiates an appropriate pager and delegates the page call to it" do
+        specific_pager = spy(:specific_pager)
+        specific_pager_class = spy(:specific_pager_class)
+        allow(described_class).to receive(:select_pager) { specific_pager_class }
+        allow(specific_pager_class).to receive(:new) { specific_pager }
 
         pager = described_class.new(enabled: false)
         text = "I try all things, I achieve what I can.\n"
         pager.page(text)
 
-        expect(TTY::Pager::NullPager).to have_received(:new)
-      end
-
-      it "selects BasicPager when no paging command is available" do
-        basic_pager = spy(:basic_pager)
-        allow(TTY::Pager::SystemPager).to receive(:exec_available?) { false }
-        allow(TTY::Pager::BasicPager).to receive(:new) { basic_pager }
-
-        pager = described_class.new
-        text = "I try all things, I achieve what I can.\n"
-        pager.page(text)
-
-        expect(basic_pager).to have_received(:page).with(text)
-      end
-
-      it "selects SystemPager when paging command is available" do
-        system_pager = spy(:system_pager)
-        allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
-        allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
-
-        pager = described_class.new
-        text = "I try all things, I achieve what I can.\n"
-        pager.page(text)
-
-        expect(system_pager).to have_received(:page).with(text)
+        expect(specific_pager).to have_received(:page).with(text)
       end
 
       context "block" do
-        it "calls .close when the block is done" do
+        it "delegates writes, calls .close when the block is done" do
           system_pager = spy(:system_pager)
           allow(TTY::Pager::SystemPager).to receive(:exec_available?) { true }
           allow(TTY::Pager::SystemPager).to receive(:new) { system_pager }
 
           text = "I try all things, I achieve what I can.\n"
           described_class.page do |pager|
+            pager.puts(text)
             pager.write(text)
+            pager.try_write(text)
           end
 
+          expect(system_pager).to have_received(:puts).with(text)
           expect(system_pager).to have_received(:write).with(text)
+          expect(system_pager).to have_received(:try_write).with(text)
           expect(system_pager).to have_received(:close)
         end
 
