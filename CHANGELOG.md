@@ -4,9 +4,15 @@
 
 ### Added
 * Add support for streaming by Andrew Radev(@AndrewRadev)
+* Add SystemPager integration tests by Andrew Radev(@AndrewRadev)
 
 ### Changed
-* Change Pager structure and extract TTY::Pager::Abstract for the null, basic and system pagers
+* Change Pager structure and extract TTY::Pager::Abstract for the null, basic and
+  system pagers
+* Change BasicPager paging prompt to return only formatted prompt text and
+  account for terminal height
+* Change BasicPager to quit with a single keystroke
+* Change tests structure for ease of maintenance by Andrew Radev(@AndrewRadev)
 * Change gemspec to add metadata, remove test artefacts and dev dependencies
 * Update strings dependency
 
