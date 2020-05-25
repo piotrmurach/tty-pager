@@ -41,7 +41,7 @@ RSpec.describe TTY::Pager::SystemPager do
       sleep 0.5
 
       pid = pager.instance_variable_get('@pager_io').instance_variable_get('@pid')
-      Process.kill('TERM', pid)
+      Process.kill('KILL', pid)
       Process.waitpid(pid)
 
       # Script finishes after two lines, this `puts` call should raise `PagerClosed`
