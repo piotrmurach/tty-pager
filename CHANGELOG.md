@@ -16,6 +16,9 @@
 * Change gemspec to add metadata, remove test artefacts and dev dependencies
 * Update strings dependency
 
+### Fixed
+* Fix SystemPager to run command test silently via Open3 and thus work on JRuby
+
 ## [v0.12.1] - 2019-03-16
 
 ### Fixed
