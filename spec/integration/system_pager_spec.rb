@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'tmpdir'
+
 RSpec.describe TTY::Pager::SystemPager do
   around :each do |example|
     Dir.mktmpdir do |dir|
