@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "open3"
 require "tty-which"
 
 require_relative "abstract"
@@ -28,20 +29,15 @@ module TTY
 
       # Run pager command silently with no input and capture output
       #
-      # @return [nil, String]
-      #   command output or nil if command fails to run
+      # @return [Boolean]
+      #   true if command runs successfully, false otherwise
       #
       # @api private
       def self.run_command(*args)
-        require "tempfile"
-        out = Tempfile.new("tty-pager")
-        result = system(*args, out: out.path, err: out.path, in: ::File::NULL)
-        return if result.nil?
-        out.rewind
-        out.read
-      ensure
-        out.close
-        out.unlink
+        _, err, status = Open3.capture3(*args)
+        err.empty? && status.success?
+      rescue Errno::ENOENT
+        false
       end
 
       # List possible executables for output paging
@@ -185,9 +181,9 @@ module TTY
         close
 
         command = pager_command
-        out = self.class.run_command(command)
+        status = self.class.run_command(command)
         # Issue running command, e.g. unsupported flag, fallback to just command
-        unless out.empty?
+        unless status
           command = pager_command.split.first
         end
 

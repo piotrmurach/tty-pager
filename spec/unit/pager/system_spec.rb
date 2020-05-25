@@ -151,8 +151,7 @@ RSpec.describe TTY::Pager::SystemPager do
       text = "I try all things, I achieve what I can.\n"
       exec = "less --unknown"
       allow(described_class).to receive(:find_executable) { exec }
-      allow(described_class).to receive(:run_command).with(exec) {
-        "There is no unknown option (\"less --help\" for help)" }
+      allow(described_class).to receive(:run_command).with(exec) { false }
       system_pager = described_class.new(command: exec)
       write_io = spy(:write_io)
       allow(IO).to receive(:popen).and_return(write_io)
