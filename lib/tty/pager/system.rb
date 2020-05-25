@@ -46,10 +46,17 @@ module TTY
       #
       # @api private
       def self.executables
-        [ENV["GIT_PAGER"], ENV["PAGER"],
-         command_exists?("git") ? `git config --get-all core.pager` : nil,
+        [ENV["GIT_PAGER"], ENV["PAGER"], git_pager,
          "less -r", "more -r", "most", "cat", "pager", "pg"].compact
       end
+
+      # Finds git pager configuration
+      #
+      # @api private
+      def self.git_pager
+        command_exists?("git") ? `git config --get-all core.pager` : nil
+      end
+      private_class_method :git_pager
 
       # Find first available termainal pager program executable
       #
