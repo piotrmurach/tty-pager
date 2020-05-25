@@ -218,8 +218,9 @@ module TTY
           @io.close
           _, status = Process.waitpid2(@pid, Process::WNOHANG)
           status.success?
-        rescue Errno::ECHILD
-          # on jruby 9x waiting on pid raises
+        rescue Errno::ECHILD, Errno::EPIPE
+          # on jruby 9x waiting on pid raises ECHILD
+          # on ruby 2.5/2.6, closing a closed pipe raises EPIPE
           true
         end
 
