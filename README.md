@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://piotrmurach.github.io/tty" target="_blank"><img width="130" src="https://cdn.rawgit.com/piotrmurach/tty/master/images/tty.png" alt="tty logo" /></a>
+  <a href="https://piotrmurach.github.io/tty" target="_blank"><img width="130" src="https://github.com/piotrmurach/tty/raw/master/images/tty.png" alt="tty logo" /></a>
 </div>
 
 # TTY::Pager [![Gitter](https://badges.gitter.im/Join%20Chat.svg)][gitter]
@@ -40,48 +40,70 @@ Or install it yourself as:
 
 ## Overview
 
-The **TTY::Pager** on initialization will choose the best available pager out of `SystemPager`, `BasicPager` or `NullPager`. If paging is disabled then a `NullPager` is used, which either returns text as is or simply prints it out to stdout on tty devices. Otherwise a check is performed to find paging command to page text with `SystemPager`. However, if no paging command is found, a `BasicPager` is used which is a pure Ruby implementation that is guaranteed to work with any ruby interpreter and any platform.
+The **TTY::Pager** will automatically choose the best available pager on a user's system. Failing to do so, it will fallback on a pure Ruby version that is guaranteed to work with any Ruby interpreter and on any platform.
+
+## Contents
+
+* [1. Usage](#1-usage)
+* [2. API](#2-api)
+  * [2.1 new](#21-new)
+    * [2.1.1 :enabled](#211-enabled)
+    * [2.1.2 :command](#212-command)
+    * [2.1.3 :width](#213-width)
+    * [2.1.4 :prompt](#214-prompt)
+  * [2.2 page](#22-page)
+  * [2.3 write](#23-write)
+  * [2.4 try_write](#24-try_write)
+  * [2.5 puts](#25-puts)
+  * [2.6 close](#26-close)
+  * [2.7 ENV](#27-env)
 
 ## 1. Usage
 
-In order to let **TTY::Pager** pick the best paging mechanism automatically do:
+The **TTY::Pager** will pick the best paging mechanism available on your system when initialized:
 
 ```ruby
 pager = TTY::Pager.new
 ```
 
-Then to perform actual content pagination invoke `page` method with the content to paginate as the argument:
+Then to start paginating text call the `page` method with the content as the first argument:
 
 ```ruby
 pager.page("Very long text...")
 ```
 
-If, instead of a single string, you'd like to paginate a long-running operation, you could use the block form of the pager:
+This will launch a pager in the background and wait until the user is done.
+
+Alternatively, you can pass the `:path` keyword to specify a file path:
+
+```ruby
+pager.page(path: "/path/to/filename.txt")
+```
+
+If instead you'd like to paginate a long-running operation, you could use the block form of the pager:
 
 ```ruby
 TTY::Pager.page do |pager|
   File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
-    # do some work with the line:
-    sleep 0.1
+    # do some work with the line
 
-    # send it to the pager:
-    pager.write(line)
+    pager.write(line) # send it to the pager
   end
 end
 ```
 
-For more control, you could translate the block form into separate `write` and `close` calls:
+After block finishes, the pager is automatically closed.
+
+For more control, you can translate the block form into separate `write` and `close` calls:
 
 ```ruby
 begin
   pager = TTY::Pager.new
 
   File.open("file_with_lots_of_lines.txt", "r").each_line do |line|
-    # do some work with the line:
-    sleep 0.1
+    # do some work with the line
 
-    # send it to the pager:
-    pager.write(line)
+    pager.write(line) # send it to the pager
   end
 rescue TTY::Pager::PagerClosed
   # the user closed the paginating tool
@@ -94,11 +116,25 @@ If you want to use a specific pager you can do so by invoking it directly:
 
 ```ruby
 pager = TTY::Pager::BasicPager.new
+# or
+pager = TTY::Pager::SystemPager.new
+# or
+pager = TTY::Pager::NullPager.new
 ```
 
-## 2. Interface
+## 2. API
 
-### :enabled
+### 2.1 new
+
+The `TTY::Pager` can be configured during initialization for terminal width, type of prompt when basic pager is invoked, and the pagination command to run.
+
+For example, to disable a pager in CI you could do:
+
+```ruby
+pager = TTY::Pager.new(enabled: false)
+````
+
+#### 2.1.1 :enabled
 
 If you want to disable the pager pass the `:enabled` option set to `false`:
 
@@ -106,52 +142,172 @@ If you want to disable the pager pass the `:enabled` option set to `false`:
 pager = TTY::Pager.new(enabled: false)
 ```
 
-### :width
+#### 2.1.2 :command
 
-The `BasicPager` allows to wrap content at given width:
+To force `TTY::Pager` to always use a specific paging tool(s), use the `:command` option:
+
+```ruby
+TTY::Pager.new(command: "less -R")
+```
+
+The `:command` also accepts an array of pagers to use:
+
+```ruby
+pager = TTY::Pager.new(command: ["less -r", "more -r"])
+```
+
+To skip automatic detection of pager and always use a system pager do:
+
+```ruby
+TTY::Pager::SystemPager.new(command: "less -R")
+```
+
+#### 2.1.3 :width
+
+Only the `BasicPager` allows you to wrap content at given terminal width:
 
 ```ruby
 pager = TTY::Pager.new(width: 80)
+```
+
+This option doesn't affect the `SystemPager`.
+
+To directly use `BasicPager` do:
+
+```ruby
 pager = TTY::Pager::BasicPager.new(width: 80)
 ```
 
-### :prompt
+#### 2.1.4 :prompt
 
-For the `BasicPager` you can pass a `:prompt` option to change the page break text:
-
-```ruby
-prompt = -> (page_num) { output.puts "Page -#{page_num}- Press enter to continue" }
-pager = TTY::Pager::BasicPager.new(prompt: prompt)
-```
-
-### :command
-
-You can force `SystemPager` to always use a specific paging tool(s) by passing the `:command` option:
+To change the `BasicPager` page break prompt display use the `:prompt` option:
 
 ```ruby
-TTY::Pager.new(command: 'less -R')
-TTY::Pager::SystemPager.new(command: 'less -R')
+prompt = -> (page) { "Page -#{page_num}- Press enter to continue" }
+pager = TTY::Pager.new(prompt: prompt)
 ```
 
-You also specify an array of pagers to use:
+### 2.2 page
+
+To start paging use the `page` method. It can be invoked on an instance or a class.
+
+The class-level `page` is a shortcut and more convenient. To page some text you only need to do:
 
 ```ruby
-pager = TTY::Pager.new(command: ['less -r', 'more -r'])
+TTY::Pager.page("Some long text...")
+````
+
+If you prefer to use a specific command do:
+
+```ruby
+TTY::Pager.page("Some long text...", command: "less -R")
+````
+
+The instance equivalent would be to do:
+
+```ruby
+pager = TTY::Pager.new(command: "less -R")
+pager.page("Some long text...")
+````
+
+Apart from text, you can page file content by passing the `:path` option:
+
+```ruby
+TTY::Pager.page(path: "/path/to/filename.txt", command: "less -R")
+````
+
+By using class-level `page` with a block, the pager is automatically closed after the block execution. Another way to process a file would be:
+
+```ruby
+TTY::Pager.page do |pager|
+  File.foreach("filename.txt") do |line|
+    # do some work with the line
+
+    pager.write(line) # write line to the pager
+  end
+end
 ```
 
-### PAGER
+The instance equivalent of the block version would be:
 
-By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager`. Therefore, if you wish to set your preferred pager you can either set up your shell like so:
+```
+pager = TTY::Pager.new
+begin
+  File.foreach("filename.txt") do |line|
+    # do some work with the line
+
+    pager.write(line)
+  end
+rescue TTY::Pager::PagerClosed
+ensure
+  pager.close
+end
+```
+
+### 2.3 write
+
+To stream content to the pager use the `write` method.
+
+```pager
+pager.write("Some text")
+```
+
+You can pass in any number of arguments:
+
+```ruby
+pager.write("one", "two", "three")
+```
+
+### 2.4 try_write
+
+To check if a write has been successful use `try_write`:
+
+```ruby
+pager.try_write("Some text")
+# => true
+```
+
+### 2.5 puts
+
+To write a line of text and end it with a new line use `puts` call:
+
+```ruby
+pager.puts("Single line of content")
+```
+
+### 2.6 close
+
+When you're done streaming content manually use `close` to finish paging.
+
+All interactions with a pager can raise an exception for various reasons, so wrap your code using the following pattern:
+
+```ruby
+pager = TTY::Pager.new
+
+begin
+  # ... perform pager writes
+rescue TTY::Pager::PagerClosed
+  # the user closed the paginating tool
+ensure
+  pager.close
+end
+```
+
+### 2.7 ENV
+
+By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager` and more pagers.
+
+Therefore, if you wish to set your preferred pager you can either set up your shell like so:
 
 ```bash
 PAGER=less
 export PAGER
 ```
 
-or set `PAGER` in Ruby script:
+Or set `PAGER` in Ruby script:
 
 ```ruby
-ENV['PAGER']='less'
+ENV["PAGER"]="less"
 ```
 
 ## Contributing
