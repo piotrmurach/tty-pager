@@ -17,8 +17,10 @@ RSpec.describe TTY::Pager::SystemPager do
   end
 
   it "allows pagination to happen asynchronously" do
-    output_path = Pathname.new('external_pager_output.txt')
-    described_class.page(command: "ruby #{fixtures_path('external_pager.rb')}") do |pager|
+    output_path = Pathname.new('output.txt')
+    pager_command = "ruby #{fixtures_path('external_pager.rb')} #{output_path}"
+
+    described_class.page(command: pager_command) do |pager|
       pager.puts("one")
       pager.write("two\n")
       pager.try_write("three\n")
@@ -28,8 +30,10 @@ RSpec.describe TTY::Pager::SystemPager do
   end
 
   it "stops paginating once external tool is closed" do
-    output_path = Pathname.new('external_pager_output.txt')
-    described_class.page(command: "ruby #{fixtures_path('external_pager.rb')}") do |pager|
+    output_path = Pathname.new('output.txt')
+    pager_command = "ruby #{fixtures_path('external_pager.rb')} #{output_path}"
+
+    described_class.page(command: pager_command) do |pager|
       pager.puts("one")
       pager.puts("two")
 
