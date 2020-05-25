@@ -98,40 +98,85 @@ module TTY
       # @api private
       def send_text(write_method, text)
         text.lines.each do |line|
-          chunk = []
+          chunk = create_chunk_from(line)
 
-          if !@leftover.empty?
-            chunk.concat(@leftover)
-            @leftover.clear
-          end
+          output.public_send(write_method, chunk)
 
-          Strings.wrap(line, @width).lines.each do |line_part|
-            if @lines_left > 0
-              chunk << line_part
-              @lines_left -= 1
-            else
-              @leftover << line_part
-            end
-          end
+          next unless page_break?
 
-          output.public_send(write_method, chunk.join)
+          output.puts(page_break_prompt)
 
-          next unless @lines_left.zero?
+          continue_paging?(input)
 
-          unless continue_paging?(@page_num)
-            raise PagerClosed.new("The pager tool was closed")
-          end
-
-          @lines_left = @height
-          if @leftover.size > 0
-            @lines_left -= @leftover.size
-          end
-          @page_num += 1
+          next_page
         end
+
+        if !remaining_content.empty?
+          output.public_send(write_method, remaining_content)
+        end
+      end
+
+      # Convert line to a chunk of text to fit display
+      #
+      # @param [String] line
+      #
+      # @return [String]
+      #
+      # @api private
+      def create_chunk_from(line)
+        chunk = []
 
         if !@leftover.empty?
-          output.public_send(write_method, @leftover.join)
+          chunk.concat(@leftover)
+          @leftover.clear
         end
+
+        Strings.wrap(line, @width).lines.each do |line_part|
+          if @lines_left > 0
+            chunk << line_part
+            @lines_left -= 1
+          else
+            @leftover << line_part
+          end
+        end
+
+        chunk.join
+      end
+
+      # Check if time to break a page
+      #
+      # @return [Boolean]
+      #
+      # @api private
+      def page_break?
+        @lines_left.zero?
+      end
+
+      # Any remaining content
+      #
+      # @return [String]
+      #
+      # @api private
+      def remaining_content
+        @leftover.join
+      end
+
+      # Switch over to the next page
+      #
+      # @api private
+      def next_page
+        @page_num += 1
+        @lines_left = @height
+        if @leftover.size > 0
+          @lines_left -= @leftover.size
+        end
+      end
+
+      # Dispaly prompt at page break
+      #
+      # @api private
+      def page_break_prompt
+        Strings.wrap(@prompt.call(@page_num), @width)
       end
 
       # Check if paging should be continued
@@ -142,9 +187,10 @@ module TTY
       # @return [Boolean]
       #
       # @api private
-      def continue_paging?(page)
-        output.puts(Strings.wrap(@prompt.call(page), @width))
-        !input.getch.chomp[/q/i]
+      def continue_paging?(input)
+        if input.getch.chomp[/q/i]
+          raise PagerClosed.new("The pager tool was closed")
+        end
       end
     end # BasicPager
   end # Pager
