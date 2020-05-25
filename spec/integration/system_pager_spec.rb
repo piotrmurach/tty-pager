@@ -11,22 +11,14 @@ RSpec.describe TTY::Pager::SystemPager do
 
   it "paginates some text" do
     output_path = Pathname.new('output.txt')
+    described_class.page("Some text", command: "ruby #{fixtures_path('cat.rb')} > #{output_path}")
 
-    described_class.page("Some text", command: "cat > #{output_path}")
     expect(output_path.read).to eq "Some text"
   end
 
   it "allows pagination to happen asynchronously" do
-    output_path = Pathname.new('output.txt')
-    File.open('external_pager.rb', 'w') do |script|
-      script.write(<<~RUBY)
-        File.open('output.txt', 'w') do |output|
-          ARGF.each { |line| output.puts(line) }
-        end
-      RUBY
-    end
-
-    described_class.page(command: "ruby external_pager.rb") do |pager|
+    output_path = Pathname.new('external_pager_output.txt')
+    described_class.page(command: "ruby #{fixtures_path('external_pager.rb')}") do |pager|
       pager.puts("one")
       pager.write("two\n")
       pager.try_write("three\n")
@@ -36,19 +28,8 @@ RSpec.describe TTY::Pager::SystemPager do
   end
 
   it "stops paginating once external tool is closed" do
-    output_path = Pathname.new('output.txt')
-    File.open('external_pager.rb', 'w') do |script|
-      script.write(<<~RUBY)
-        ARGF.each_with_index do |line, index|
-          File.open('output.txt', 'a') do |output|
-            output.puts(line)
-            output.flush
-          end
-        end
-      RUBY
-    end
-
-    described_class.page(command: "ruby external_pager.rb") do |pager|
+    output_path = Pathname.new('external_pager_output.txt')
+    described_class.page(command: "ruby #{fixtures_path('external_pager.rb')}") do |pager|
       pager.puts("one")
       pager.puts("two")
 

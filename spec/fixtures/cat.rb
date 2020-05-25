@@ -1,0 +1,1 @@
+STDOUT.write(ARGF.read)
