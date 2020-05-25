@@ -1,7 +1,9 @@
-require 'tty-markdown'
-require_relative '../lib/tty-pager'
+# frozen_string_literal: true
+
+require "tty-markdown"
+require_relative "../lib/tty-pager"
 
 pager = TTY::Pager.new
-file = File.join(__dir__, '../README.md')
+file = File.join(__dir__, "../README.md")
 text = TTY::Markdown.parse_file(file)
 pager.page(text)

@@ -1,7 +1,8 @@
-require_relative '../lib/tty-pager'
+# frozen_string_literal: true
 
-ENV['PAGER']='less'
+require_relative "../lib/tty-pager"
+
+ENV["PAGER"]="less"
 
 pager = TTY::Pager::SystemPager.new
-file = File.join(File.dirname(__FILE__), 'temp.txt')
-pager.page(File.read(file))
+pager.page(path: File.join(__dir__, "temp.txt"))
