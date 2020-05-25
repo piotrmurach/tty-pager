@@ -230,7 +230,7 @@ end
 
 The instance equivalent of the block version would be:
 
-```
+```ruby
 pager = TTY::Pager.new
 begin
   File.foreach("filename.txt") do |line|
@@ -248,7 +248,7 @@ end
 
 To stream content to the pager use the `write` method.
 
-```pager
+```ruby
 pager.write("Some text")
 ```
 
