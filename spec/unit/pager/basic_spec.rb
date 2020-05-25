@@ -107,7 +107,7 @@ RSpec.describe TTY::Pager::BasicPager do
     it "stops paging when q is pressed" do
       text = []
       10.times { text << "I try all things, I achieve what I can.\n"}
-      input << "\nq\n"
+      input << "\nq"
       input.rewind
       pager = described_class.new(output: output, input: input,
                                   width: 100, height: 5)
@@ -129,7 +129,7 @@ RSpec.describe TTY::Pager::BasicPager do
     it "allows to change paging prompt" do
       text = []
       5.times { text << "I try all things, I achieve what I can.\n"}
-      input << "\nq\n"
+      input << "\n"
       input.rewind
       prompt = ->(page) { "Page -#{page}-" }
       pager = described_class.new(output: output, input: input,
@@ -176,7 +176,7 @@ RSpec.describe TTY::Pager::BasicPager do
       pager = described_class.new(output: output, input: input,
                                   width: 100, height: 5)
 
-      input << "q\n"
+      input << "q"
       input.rewind
 
       expect {

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "io/console"
 require "strings"
 require "tty-screen"
 
@@ -143,7 +144,7 @@ module TTY
       # @api private
       def continue_paging?(page)
         output.puts(Strings.wrap(@prompt.call(page), @width))
-        !@input.getc.chomp[/q/i]
+        !input.getch.chomp[/q/i]
       end
     end # BasicPager
   end # Pager
