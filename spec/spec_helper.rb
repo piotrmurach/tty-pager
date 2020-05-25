@@ -32,14 +32,6 @@ module TestHelpers
     def fixtures_path(*args)
       ::File.expand_path(::File.join(dir_path("spec/fixtures"), *args))
     end
-
-    def mktmpdir
-      path = ::File.expand_path("#{Dir.tmpdir}/tty-pager-spec-#{Time.now.to_i}#{rand(1000)}/")
-      FileUtils.mkdir_p(path)
-      yield path
-    ensure
-      FileUtils.rm_rf(path) if File.exist?(path)
-    end
   end
 end
 

@@ -2,7 +2,7 @@
 
 RSpec.describe TTY::Pager::SystemPager do
   around :each do |example|
-    mktmpdir do |dir|
+    Dir.mktmpdir do |dir|
       FileUtils.cd(dir) do
         example.run
       end
