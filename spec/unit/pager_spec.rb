@@ -25,13 +25,14 @@ module TTY
 
       it "selects BasicPager when no command available" do
         allow(TTY::Pager::SystemPager).to receive(:find_executable) { nil }
+        allow(TTY::Screen).to receive(:height)
         prompt = ->(page) { "Page #{page}\non multiline\n" }
 
         pager = described_class.new(width: 80, height: 30, prompt: prompt)
 
         expect(pager).to be_kind_of(Pager::BasicPager)
+        expect(TTY::Screen).to_not have_received(:height)
         expect(pager.instance_variable_get("@width")).to eq(80)
-        expect(pager.instance_variable_get("@height")).to eq(28)
         expect(pager.instance_variable_get("@prompt")).to eq(prompt)
       end
     end

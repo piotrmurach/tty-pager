@@ -36,11 +36,10 @@ module TTY
       def initialize(height: TTY::Screen.height, width: TTY::Screen.width,
                      prompt: DEFAULT_PROMPT, **options)
         super(**options)
-        @height  = height
         @width   = width
         @prompt  = prompt
         prompt_height = Strings.wrap(prompt.call(100).to_s, width).lines.count
-        @height -= prompt_height
+        @page_cursor = PageCursor.new(height - prompt_height)
 
         reset
       end
@@ -85,9 +84,51 @@ module TTY
       #
       # @api private
       def reset
-        @page_num = 1
+        @page_cursor.reset
         @leftover = []
-        @lines_left = @height
+      end
+
+      # Tracks page cursor
+      #
+      # @api private
+      class PageCursor
+        attr_reader :page_num
+
+        def initialize(height)
+          @height = height
+          reset
+        end
+
+        def reset
+          @page_num = 1
+          @lines_left = @height
+        end
+
+        # Move cursor to the next page
+        #
+        # @api public
+        def next_page
+          @page_num += 1
+          @lines_left = @height
+        end
+
+        # Move coursor down the page by count
+        #
+        # @param [Integer] count
+        #
+        # @api public
+        def down_by(count)
+          @lines_left -= count
+        end
+
+        # Check if time to break a page
+        #
+        # @return [Boolean]
+        #
+        # @api private
+        def page_break?
+          @lines_left.zero?
+        end
       end
 
       # The lower-level common implementation of printing methods
@@ -102,7 +143,7 @@ module TTY
 
           output.public_send(write_method, chunk)
 
-          next unless page_break?
+          next unless @page_cursor.page_break?
 
           output.puts(page_break_prompt)
 
@@ -132,24 +173,15 @@ module TTY
         end
 
         Strings.wrap(line, @width).lines.each do |line_part|
-          if @lines_left > 0
+          if !@page_cursor.page_break?
             chunk << line_part
-            @lines_left -= 1
+            @page_cursor.down_by(1)
           else
             @leftover << line_part
           end
         end
 
         chunk.join
-      end
-
-      # Check if time to break a page
-      #
-      # @return [Boolean]
-      #
-      # @api private
-      def page_break?
-        @lines_left.zero?
       end
 
       # Any remaining content
@@ -165,10 +197,9 @@ module TTY
       #
       # @api private
       def next_page
-        @page_num += 1
-        @lines_left = @height
+        @page_cursor.next_page
         if @leftover.size > 0
-          @lines_left -= @leftover.size
+          @page_cursor.down_by(@leftover.size)
         end
       end
 
@@ -176,7 +207,7 @@ module TTY
       #
       # @api private
       def page_break_prompt
-        Strings.wrap(@prompt.call(@page_num), @width)
+        Strings.wrap(@prompt.call(@page_cursor.page_num), @width)
       end
 
       # Check if paging should be continued
