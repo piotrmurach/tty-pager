@@ -16,7 +16,17 @@ RSpec.describe TTY::Pager::SystemPager do
     pager_command = "ruby #{fixtures_path("cat.rb")} > #{output_path}"
     described_class.page("Some text", command: pager_command)
 
-    expect(output_path.read).to eq "Some text"
+    expect(output_path.read).to eq("Some text")
+  end
+
+  it "paginates text from a file path" do
+    file_path = fixtures_path("copy.txt")
+    output_path = Pathname.new("output.txt")
+    pager_command = "ruby #{fixtures_path("cat.rb")} > #{output_path}"
+
+    described_class.page(path: file_path, command: pager_command)
+
+    expect(output_path.read).to eq("one\ntwo\nthree\n")
   end
 
   it "allows pagination to happen asynchronously" do
@@ -29,7 +39,7 @@ RSpec.describe TTY::Pager::SystemPager do
       pager.try_write("three\n")
     end
 
-    expect(output_path.read).to eq "one\ntwo\nthree\n"
+    expect(output_path.read).to eq("one\ntwo\nthree\n")
   end
 
   it "stops paginating once external tool is closed" do
@@ -44,6 +54,6 @@ RSpec.describe TTY::Pager::SystemPager do
       pager.puts("three")
     end
 
-    expect(output_path.read).to eq "one\ntwo\n"
+    expect(output_path.read).to eq("one\ntwo\n")
   end
 end
