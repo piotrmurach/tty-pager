@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "open3"
-require "tty-which"
 
 require_relative "abstract"
 
@@ -24,7 +23,11 @@ module TTY
       #
       # @api private
       def self.command_exists?(command)
-        TTY::Which.exist?(command)
+        exts = ENV.fetch("PATHEXT", "").split(::File::PATH_SEPARATOR)
+        ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).any? do |dir|
+          file = ::File.join(dir, command)
+          ::File.exist?(file) || exts.any? { |ext| ::File.exist?("#{file}#{ext}") }
+        end
       end
 
       # Run pager command silently with no input and capture output

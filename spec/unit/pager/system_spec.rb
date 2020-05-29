@@ -38,12 +38,31 @@ RSpec.describe TTY::Pager::SystemPager do
     subject(:pager) { described_class }
 
     it "successfully checks command exists on the system" do
-      allow(TTY::Which).to receive(:exist?).with("less").and_return("/usr/bin/less").and_return(true)
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return("")
+      allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
+      allow(::File).to receive(:exist?)
+        .with(::File.join("/usr/bin", "less")).and_return(true)
+
       expect(pager.command_exists?("less")).to eq(true)
     end
 
+    it "successfully checks command with extensions exists on the system" do
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".exe")
+      allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
+      allow(::File).to receive(:exist?)
+        .with(::File.join("/usr/bin", "less")).and_return(false)
+      allow(::File).to receive(:exist?)
+        .with(::File.join("/usr/bin", "less.exe")).and_return(true)
+
+      expect(pager.command_exists?("less.exe")).to eq(true)
+    end
+
     it "fails to check command exists on the system" do
-      allow(TTY::Which).to receive(:exist?).with("less").and_return(false)
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return("")
+      allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
+      allow(::File).to receive(:exist?)
+        .with(::File.join("/usr/bin", "less")).and_return(false)
+
       expect(pager.command_exists?("less")).to eq(false)
     end
   end
