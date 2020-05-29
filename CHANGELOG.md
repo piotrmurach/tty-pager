@@ -1,6 +1,6 @@
 # Change log
 
-## [v0.13.0] - 2020-05-x
+## [v0.13.0] - 2020-05-29
 
 ### Added
 * Add support for streaming by Andrew Radev(@AndrewRadev)
@@ -12,9 +12,12 @@
 * Change BasicPager paging prompt to return only formatted prompt text and
   account for terminal height
 * Change BasicPager to quit with a single keystroke
+* Change BasicPager internals to increase readability
+* Change SystemPager#command_exist? to search path
 * Change tests structure for ease of maintenance by Andrew Radev(@AndrewRadev)
 * Change gemspec to add metadata, remove test artefacts and dev dependencies
-* Update strings dependency
+* Update strings & tty-screen dependencies
+* Remove tty-which dependency
 
 ### Fixed
 * Fix SystemPager to run command test silently via Open3 and thus work on JRuby
