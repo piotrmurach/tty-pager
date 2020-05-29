@@ -136,11 +136,13 @@ pager = TTY::Pager.new(enabled: false)
 
 #### 2.1.1 :enabled
 
-If you want to disable the pager pass the `:enabled` option set to `false`:
+If you want to disable the paging use the `:enabled` option set to `false`:
 
 ```ruby
 pager = TTY::Pager.new(enabled: false)
 ```
+
+This will directly print all the content to the standard output. If the output isn't a tty device, the pager will return the content directly to the caller.
 
 #### 2.1.2 :command
 
@@ -155,6 +157,8 @@ The `:command` also accepts an array of pagers to use:
 ```ruby
 pager = TTY::Pager.new(command: ["less -r", "more -r"])
 ```
+
+If the provided pager command or commands don't exist on user's system, the pager will fallback automatically on a basic Ruby implementation.
 
 To skip automatic detection of pager and always use a system pager do:
 
@@ -180,7 +184,7 @@ pager = TTY::Pager::BasicPager.new(width: 80)
 
 #### 2.1.4 :prompt
 
-To change the `BasicPager` page break prompt display use the `:prompt` option:
+To change the `BasicPager` page break prompt display, use the `:prompt` option:
 
 ```ruby
 prompt = -> (page) { "Page -#{page_num}- Press enter to continue" }
@@ -191,19 +195,19 @@ pager = TTY::Pager.new(prompt: prompt)
 
 To start paging use the `page` method. It can be invoked on an instance or a class.
 
-The class-level `page` is a shortcut and more convenient. To page some text you only need to do:
+The class-level `page` is a convenient shortcut. To page some text you only need to do:
 
 ```ruby
 TTY::Pager.page("Some long text...")
 ````
 
-If you prefer to use a specific command do:
+You can also include extra initialization parameters. For example, if you prefer to use a specific command do this:
 
 ```ruby
 TTY::Pager.page("Some long text...", command: "less -R")
 ````
 
-The instance equivalent would be to do:
+The instance equivalent would be:
 
 ```ruby
 pager = TTY::Pager.new(command: "less -R")
@@ -213,10 +217,10 @@ pager.page("Some long text...")
 Apart from text, you can page file content by passing the `:path` option:
 
 ```ruby
-TTY::Pager.page(path: "/path/to/filename.txt", command: "less -R")
+TTY::Pager.page(path: "/path/to/filename.txt")
 ````
 
-By using class-level `page` with a block, the pager is automatically closed after the block execution. Another way to process a file would be:
+The final way is to use the class-level `page` with a block. After the block is done, the pager is automatically closed. For example, to read a file line by line with additional processing you could do:
 
 ```ruby
 TTY::Pager.page do |pager|
@@ -236,7 +240,7 @@ begin
   File.foreach("filename.txt") do |line|
     # do some work with the line
 
-    pager.write(line)
+    pager.write(line) # write line to the pager
   end
 rescue TTY::Pager::PagerClosed
 ensure
@@ -293,21 +297,29 @@ ensure
 end
 ```
 
+Alternatively use the class-level `page` call with a block to automatically close the pager:
+
+```ruby
+TTY::Pager.page do |pager|
+  # ... perform pager writes
+end
+```
+
 ### 2.7 ENV
 
-By default the `SystemPager` will check the `PAGER` environment variable, if not set it will try one of the `less`, `more`, `cat`, `pager` and more pagers.
+By default the `SystemPager` will check the `PAGER` environment variable. If the `PAGER` isn't set, the pager will try one of the searched commands like `less`, `more` or `pg`.
 
 Therefore, if you wish to set your preferred pager you can either set up your shell like so:
 
 ```bash
-PAGER=less
+PAGER=less -R
 export PAGER
 ```
 
 Or set `PAGER` in Ruby script:
 
 ```ruby
-ENV["PAGER"]="less"
+ENV["PAGER"]="less -R"
 ```
 
 ## Contributing
@@ -319,6 +331,10 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/piotrm
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## Code of Conduct
+
+Everyone interacting in the TTY::Pager project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/piotrmurach/tty-pager/blob/master/CODE_OF_CONDUCT.md).
 
 ## Copyright
 
