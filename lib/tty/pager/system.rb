@@ -14,7 +14,7 @@ module TTY
       # Check if command exists
       #
       # @example
-      #   command_exists?("less") # => true
+      #   command_exist?("less") # => true
       #
       # @param [String] command
       #   the command to check
@@ -22,7 +22,7 @@ module TTY
       # @return [Boolean]
       #
       # @api private
-      def self.command_exists?(command)
+      def self.command_exist?(command)
         exts = ENV.fetch("PATHEXT", "").split(::File::PATH_SEPARATOR)
         ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).any? do |dir|
           file = ::File.join(dir, command)
@@ -64,7 +64,7 @@ module TTY
       #
       # @api private
       def self.git_pager
-        command_exists?("git") ? `git config --get-all core.pager` : nil
+        command_exist?("git") ? `git config --get-all core.pager` : nil
       end
       private_class_method :git_pager
 
@@ -86,7 +86,7 @@ module TTY
         execs = commands.empty? ? executables : commands
         execs
           .compact.map(&:strip).reject(&:empty?).uniq
-          .find { |cmd| command_exists?(cmd.split.first) }
+          .find { |cmd| command_exist?(cmd.split.first) }
       end
 
       # Check if command is available

@@ -43,7 +43,7 @@ RSpec.describe TTY::Pager::SystemPager do
       allow(::File).to receive(:exist?)
         .with(::File.join("/usr/bin", "less")).and_return(true)
 
-      expect(pager.command_exists?("less")).to eq(true)
+      expect(pager.command_exist?("less")).to eq(true)
     end
 
     it "successfully checks command with extensions exists on the system" do
@@ -54,7 +54,7 @@ RSpec.describe TTY::Pager::SystemPager do
       allow(::File).to receive(:exist?)
         .with(::File.join("/usr/bin", "less.exe")).and_return(true)
 
-      expect(pager.command_exists?("less.exe")).to eq(true)
+      expect(pager.command_exist?("less.exe")).to eq(true)
     end
 
     it "fails to check command exists on the system" do
@@ -63,7 +63,7 @@ RSpec.describe TTY::Pager::SystemPager do
       allow(::File).to receive(:exist?)
         .with(::File.join("/usr/bin", "less")).and_return(false)
 
-      expect(pager.command_exists?("less")).to eq(false)
+      expect(pager.command_exist?("less")).to eq(false)
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe TTY::Pager::SystemPager do
     it "provides executable names" do
       allow(ENV).to receive(:[]).with("GIT_PAGER").and_return(nil)
       allow(ENV).to receive(:[]).with("PAGER").and_return(nil)
-      allow(described_class).to receive(:command_exists?).with("git").and_return(false)
+      allow(described_class).to receive(:command_exist?).with("git").and_return(false)
 
       expect(described_class.executables).to eq([
         "less -r", "more -r", "most", "pg", "cat", "pager"
@@ -86,19 +86,19 @@ RSpec.describe TTY::Pager::SystemPager do
 
     it "finds available command" do
       allow(pager).to receive(:executables).and_return(execs)
-      allow(pager).to receive(:command_exists?).with("less") { true }
-      allow(pager).to receive(:command_exists?).with("more") { false }
+      allow(pager).to receive(:command_exist?).with("less") { true }
+      allow(pager).to receive(:command_exist?).with("more") { false }
       expect(pager.find_executable).to eql("less")
     end
 
     it "doesn't find command" do
       allow(pager).to receive(:executables).and_return(execs)
-      allow(pager).to receive(:command_exists?) { false }
+      allow(pager).to receive(:command_exist?) { false }
       expect(pager.find_executable).to be_nil
     end
 
     it "takes precedence over other commands" do
-      allow(pager).to receive(:command_exists?).with("more") { true }
+      allow(pager).to receive(:command_exist?).with("more") { true }
       expect(pager.find_executable("more")).to eql("more")
     end
 
@@ -112,7 +112,7 @@ RSpec.describe TTY::Pager::SystemPager do
 
       it "does not error" do
         allow(pager).to receive(:executables).and_return(execs)
-        allow(pager).to receive(:command_exists?).with("less") { true }
+        allow(pager).to receive(:command_exist?).with("less") { true }
         expect(pager.find_executable).to eql("less")
       end
     end
@@ -122,7 +122,7 @@ RSpec.describe TTY::Pager::SystemPager do
 
       it "finds the command" do
         allow(pager).to receive(:executables).and_return(execs)
-        allow(pager).to receive(:command_exists?).with("diff-so-fancy") { true }
+        allow(pager).to receive(:command_exist?).with("diff-so-fancy") { true }
         expect(pager.find_executable).to eql(execs.first)
       end
     end
