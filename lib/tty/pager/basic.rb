@@ -219,9 +219,16 @@ module TTY
       #
       # @api private
       def continue_paging?(input)
-        if input.getch.chomp[/q/i]
+        if getchar.chomp[/q/i]
           raise PagerClosed.new("The pager tool was closed")
         end
+      end
+
+      # Find available character reading method
+      #
+      # @api private
+      def getchar
+        input.respond_to?(:getch) ? input.getch : input.getc
       end
     end # BasicPager
   end # Pager
