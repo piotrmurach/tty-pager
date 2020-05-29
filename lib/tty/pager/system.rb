@@ -45,12 +45,19 @@ module TTY
 
       # List possible executables for output paging
       #
+      # The UNIX systems often come with "pg" and "more" but no "less" utility.
+      # The Linux usually provides "less" and "more" pager, but often no "pg".
+      # MacOS comes with "less" and "more" pager and no "pg".
+      # Windows provides "more".
+      # The "more" pager is the oldest utility and thus most compatible
+      # with many systems.
+      #
       # @return [Array[String]]
       #
       # @api private
       def self.executables
         [ENV["GIT_PAGER"], ENV["PAGER"], git_pager,
-         "less -r", "more -r", "most", "cat", "pager", "pg"].compact
+         "less -r", "more -r", "most", "pg", "cat", "pager"].compact
       end
 
       # Finds git pager configuration
