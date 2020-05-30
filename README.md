@@ -19,9 +19,9 @@
 [coverage]: https://coveralls.io/github/piotrmurach/tty-pager
 [inchpages]: http://inch-ci.org/github/piotrmurach/tty-pager
 
-> Terminal output paging in a cross-platform way supporting all major ruby interpreters.
+> A cross-platform terminal pager that works on all major Ruby interpreters.
 
-**TTY::Pager** provides independent terminal output paging component for [TTY](https://github.com/piotrmurach/tty) toolkit.
+**TTY::Pager** provides independent terminal pager component for [TTY](https://github.com/piotrmurach/tty) toolkit.
 
 ## Installation
 
