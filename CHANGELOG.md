@@ -1,6 +1,6 @@
 # Change log
 
-## [v0.13.0] - 2020-05-29
+## [v0.13.0] - 2020-05-30
 
 ### Added
 * Add support for streaming by Andrew Radev(@AndrewRadev)
