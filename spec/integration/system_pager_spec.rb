@@ -5,10 +5,8 @@ require "pathname"
 
 RSpec.describe TTY::Pager::SystemPager do
   around :each do |example|
-    Dir.mktmpdir do |dir|
-      FileUtils.cd(dir) do
-        example.run
-      end
+    ::Dir.mktmpdir do |dir|
+      ::Dir.chdir(dir, &example)
     end
   end
 
