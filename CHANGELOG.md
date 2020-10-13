@@ -1,5 +1,14 @@
 # Change log
 
+## [v0.14.0] - unreleased
+
+### Changed
+* Change to update strings dependency
+* Change to allow the pager to be specified via an absolute path (@WilliamMcCumstie)
+
+### Fixed
+* Fix name resolution with TTY::File
+
 ## [v0.13.0] - 2020-05-30
 
 ### Added
@@ -128,6 +137,7 @@
 
 * Initial release
 
+[v0.14.0]: https://github.com/piotrmurach/tty-pager/compare/v0.13.0...v0.14.0
 [v0.13.0]: https://github.com/piotrmurach/tty-pager/compare/v0.12.1...v0.13.0
 [v0.12.1]: https://github.com/piotrmurach/tty-pager/compare/v0.12.0...v0.12.1
 [v0.12.0]: https://github.com/piotrmurach/tty-pager/compare/v0.11.0...v0.12.0
