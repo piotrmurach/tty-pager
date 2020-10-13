@@ -46,6 +46,15 @@ RSpec.describe TTY::Pager::SystemPager do
       expect(pager.command_exist?("less")).to eq(true)
     end
 
+    it "successfully checks command exists via an absolute path" do
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return("")
+      allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
+      allow(::File).to receive(:exist?)
+        .with("/other/path/to/less").and_return(true)
+
+      expect(pager.command_exist?("/other/path/to/less")).to eq(true)
+    end
+
     it "successfully checks command with extensions exists on the system" do
       allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".exe")
       allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
