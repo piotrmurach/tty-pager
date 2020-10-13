@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["piotr@piotrmurach.com"]
   spec.summary       = %q{A cross-platform terminal pager that works on all major Ruby interpreters.}
   spec.description   = %q{A cross-platform terminal pager that works on all major Ruby interpreters.}
-  spec.homepage      = "https://piotrmurach.github.io/tty"
+  spec.homepage      = "https://ttytoolkit.org"
   spec.license       = "MIT"
   if spec.respond_to?(:metadata=)
     spec.metadata = {
