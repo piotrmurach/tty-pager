@@ -55,6 +55,18 @@ RSpec.describe TTY::Pager::SystemPager do
       expect(pager.command_exist?("/other/path/to/less")).to eq(true)
     end
 
+    it "successfully checks command exists via an absolute path with extension" do
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".sh:.exe")
+      allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
+      allow(::File).to receive(:exist?)
+        .with("/other/path/to/less").and_return(false)
+      allow(::File).to receive(:exist?)
+        .with("/other/path/to/less.sh").and_return(true)
+
+      expect(pager.command_exist?("/other/path/to/less")).to eq(true)
+      expect(::File).to_not receive(:exist?).with("/other/path/to/less.exe")
+    end
+
     it "successfully checks command with extensions exists on the system" do
       allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".exe")
       allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
@@ -63,7 +75,7 @@ RSpec.describe TTY::Pager::SystemPager do
       allow(::File).to receive(:exist?)
         .with(::File.join("/usr/bin", "less.exe")).and_return(true)
 
-      expect(pager.command_exist?("less.exe")).to eq(true)
+      expect(pager.command_exist?("less")).to eq(true)
     end
 
     it "fails to check command exists on the system" do
