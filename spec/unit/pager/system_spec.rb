@@ -36,6 +36,7 @@ RSpec.describe TTY::Pager::SystemPager do
 
   describe "#command_exists?" do
     subject(:pager) { described_class }
+    let(:path_sep) { ::File::PATH_SEPARATOR }
 
     it "successfully checks command exists on the system" do
       allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return("")
@@ -56,7 +57,7 @@ RSpec.describe TTY::Pager::SystemPager do
     end
 
     it "successfully checks command exists via an absolute path with extension" do
-      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".sh:.exe")
+      allow(ENV).to receive(:fetch).with("PATHEXT", "").and_return(".sh#{path_sep}.exe")
       allow(ENV).to receive(:fetch).with("PATH", "").and_return("/usr/bin/")
       allow(::File).to receive(:exist?)
         .with("/other/path/to/less").and_return(false)
