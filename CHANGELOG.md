@@ -1,6 +1,6 @@
 # Change log
 
-## [v0.14.0] - unreleased
+## [v0.14.0] - 2020-10-15
 
 ### Changed
 * Change to update strings dependency
