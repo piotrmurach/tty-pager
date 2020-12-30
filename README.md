@@ -1,11 +1,11 @@
 <div align="center">
-  <a href="https://piotrmurach.github.io/tty" target="_blank"><img width="130" src="https://github.com/piotrmurach/tty/raw/master/images/tty.png" alt="tty logo" /></a>
+  <a href="https://ttytoolkit.org" target="_blank"><img width="130" src="https://github.com/piotrmurach/tty/raw/master/images/tty.png" alt="TTY Toolkit logo" /></a>
 </div>
 
 # TTY::Pager [![Gitter](https://badges.gitter.im/Join%20Chat.svg)][gitter]
 
 [![Gem Version](https://badge.fury.io/rb/tty-pager.svg)][gem]
-[![Build Status](https://secure.travis-ci.org/piotrmurach/tty-pager.svg?branch=master)][travis]
+[![Actions CI](https://github.com/piotrmurach/tty-pager/workflows/CI/badge.svg?branch=master)][gh_actions_ci]
 [![Build status](https://ci.appveyor.com/api/projects/status/3auc1vi3mk5puqai?svg=true)][appveyor]
 [![Maintainability](https://api.codeclimate.com/v1/badges/636da0d02231b7f3e50f/maintainability)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/github/piotrmurach/tty-pager/badge.svg)][coverage]
@@ -13,7 +13,7 @@
 
 [gitter]: https://gitter.im/piotrmurach/tty
 [gem]: http://badge.fury.io/rb/tty-pager
-[travis]: http://travis-ci.org/piotrmurach/tty-pager
+[gh_actions_ci]: https://github.com/piotrmurach/tty-pager/actions?query=workflow%3ACI
 [appveyor]: https://ci.appveyor.com/project/piotrmurach/tty-pager
 [codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager/maintainability
 [coverage]: https://coveralls.io/github/piotrmurach/tty-pager
