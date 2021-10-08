@@ -9,15 +9,15 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3auc1vi3mk5puqai?svg=true)][appveyor]
 [![Maintainability](https://api.codeclimate.com/v1/badges/636da0d02231b7f3e50f/maintainability)][codeclimate]
 [![Coverage Status](https://coveralls.io/repos/github/piotrmurach/tty-pager/badge.svg)][coverage]
-[![Inline docs](http://inch-ci.org/github/piotrmurach/tty-pager.svg?branch=master)][inchpages]
+[![Inline docs](https://inch-ci.org/github/piotrmurach/tty-pager.svg?branch=master)][inchpages]
 
 [gitter]: https://gitter.im/piotrmurach/tty
-[gem]: http://badge.fury.io/rb/tty-pager
+[gem]: https://badge.fury.io/rb/tty-pager
 [gh_actions_ci]: https://github.com/piotrmurach/tty-pager/actions?query=workflow%3ACI
 [appveyor]: https://ci.appveyor.com/project/piotrmurach/tty-pager
 [codeclimate]: https://codeclimate.com/github/piotrmurach/tty-pager/maintainability
 [coverage]: https://coveralls.io/github/piotrmurach/tty-pager
-[inchpages]: http://inch-ci.org/github/piotrmurach/tty-pager
+[inchpages]: https://inch-ci.org/github/piotrmurach/tty-pager
 
 > A cross-platform terminal pager that works on all major Ruby interpreters.
 
@@ -324,7 +324,7 @@ ENV["PAGER"]="less -R"
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/piotrmurach/tty-pager. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/piotrmurach/tty-pager. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/piotrmurach/tty-pager/blob/master/CODE_OF_CONDUCT.md).
 
 1. Fork it ( https://github.com/piotrmurach/tty-pager/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
